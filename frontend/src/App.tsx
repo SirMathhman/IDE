@@ -34,7 +34,9 @@ function App() {
             display: "flex",
             "flex-direction": "row",
             gap: "1rem",
-            padding: "1rem"
+            padding: "1rem",
+            width: "calc(100% - 2rem)",
+            height: "calc(100% - 2rem)"
         }}>
             <div style={{
                 width: "20%"
