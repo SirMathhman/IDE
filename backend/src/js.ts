@@ -1,12 +1,16 @@
-export class JSUnknown {
-    private readonly value: unknown;
+export interface JSUnknown {
+    asJSON(): string;
 
+    unwrap(): unknown;
+}
 
-    constructor(value: unknown) {
-        this.value = value;
-    }
-
-    asJSON() {
-        return JSON.stringify(this.value);
+export function JSUnknown(value: unknown): JSUnknown {
+    return {
+        asJSON() {
+            return JSON.stringify(value);
+        },
+        unwrap() {
+            return value;
+        }
     }
 }

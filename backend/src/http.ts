@@ -1,6 +1,7 @@
 import Application, {ParameterizedContext} from "koa";
-import {AsyncResult} from "./result";
+import {$AsyncResultToType} from "./result";
 import {JSUnknown} from "./js";
+import {jsMapFromRecord, Map} from "./collect";
 
 export class ContextWrapper {
     private readonly context: ParameterizedContext;
@@ -8,24 +9,48 @@ export class ContextWrapper {
     constructor(context: Application.ParameterizedContext) {
         this.context = context;
     }
+
+    get routeParams(): Map<string, string> {
+        const params: Record<string, string> = this.context.params ?? {};
+        return jsMapFromRecord(params);
+    }
+
+    respondWith(response: Response) {
+        this.context.status = response.status;
+        this.context.body = response.body.unwrap();
+    }
 }
 
 export interface Response {
-    body: unknown;
+    body: JSUnknown;
     status: number;
 }
 
-export function OkResponse(content: unknown): Response {
+export function OkResponse(content: JSUnknown): Response {
     return {
         status: 200,
         body: content
     }
 }
 
-export function InternalServerErrorResponse(error: Error): Response {
+export function BadRequest(reason: string): Response {
+    return {
+        status: 400,
+        body: JSUnknown(reason)
+    }
+}
+
+export function InternalServerErrorResponseFromUnknown(error: JSUnknown): Response {
     return {
         status: 500,
         body: error
+    }
+}
+
+export function InternalServerErrorResponseFromError(error: Error): Response {
+    return {
+        status: 500,
+        body: JSUnknown(error)
     }
 }
 
@@ -33,4 +58,11 @@ export function RouteError(value: JSUnknown): Error {
     return new Error(value.asJSON());
 }
 
-type Route = (context: ContextWrapper) => AsyncResult<Response, Error>;
+export function $Route(route: (context: ContextWrapper) => Promise<Response>) {
+    return async function (context: ContextWrapper) {
+        const response = await $AsyncResultToType<Response, Response>(async () => await route(context))
+            .match(value => value, err => err);
+
+        context.respondWith(response)
+    };
+}

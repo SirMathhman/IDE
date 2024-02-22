@@ -1,32 +1,31 @@
-import Koa, {ParameterizedContext} from "koa";
+import Koa from "koa";
 import {promises as fs} from "fs";
 import cors from "@koa/cors";
 import Router from "koa-router";
-import {ContextWrapper, InternalServerErrorResponse, OkResponse, Response, RouteError} from "./http";
-import {$AsyncResult, AsyncResult} from "./result";
+import {$Route, BadRequest, ContextWrapper, InternalServerErrorResponseFromUnknown, OkResponse, Response} from "./http";
+import {$AsyncResultUnknown, ThrowableOption} from "./result";
+import {JSUnknown} from "./js";
 
-function readFiles(): AsyncResult<Response, Error> {
-    return $AsyncResult(async () => OkResponse(await fs.readdir(process.cwd()))).mapErr(RouteError);
+async function readFiles(): Promise<Response> {
+    try {
+        return OkResponse(JSUnknown(await fs.readdir(process.cwd())));
+    } catch (e) {
+        return InternalServerErrorResponseFromUnknown(JSUnknown(e));
+    }
 }
 
 async function readChild(context: ContextWrapper) {
-    const params = context.params;
-    const child = params["child"];
+    const params = context.routeParams;
+    const child = params.get("child")
+        .into(ThrowableOption)
+        .orElseErr(() => BadRequest("No child response."))
+        .$();
 
-    if (!child) {
-        context.status = 400;
-        context.body = "No child provided.";
-        return;
-    }
+    const output = await $AsyncResultUnknown(async () => await fs.readFile(child))
+        .mapErr(InternalServerErrorResponseFromUnknown)
+        .$();
 
-    try {
-        const output = await fs.readFile(child);
-        context.status = 200;
-        context.body = output;
-    } catch (e) {
-        context.status = 500;
-        context.message = `Failed to read file at '${child}'.`;
-    }
+    return OkResponse(JSUnknown(output));
 }
 
 function createFileRoutes() {
@@ -35,15 +34,13 @@ function createFileRoutes() {
     });
 
     router.get("/", async context => {
-        const response = await readFiles()
-            .mapErr(InternalServerErrorResponse)
-            .match(value => value, err => err);
-
-        context.response.status = response.status;
-        context.response.body = response.body;
+        await $Route(readFiles)(new ContextWrapper(context));
     });
 
-    router.get("/:child", readChild);
+    router.get("/:child", async context => {
+        await $Route(readChild)(new ContextWrapper(context));
+    });
+
     return router;
 }
 
