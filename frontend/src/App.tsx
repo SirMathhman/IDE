@@ -1,6 +1,8 @@
 import {createSignal, For, onMount} from 'solid-js'
 import './App.css'
 import axios from "axios";
+import {Row} from "./Flex.tsx";
+import {Padding} from "./Padding.tsx";
 
 const ROOT_URL = "http://localhost:3000";
 
@@ -32,21 +34,40 @@ function App() {
     }
 
     return (
-        <div style={{
-            display: "flex",
-            "flex-direction": "row",
-            gap: "1rem",
-            padding: "1rem",
-            width: "calc(100% - 2rem)",
-            height: "calc(100% - 2rem)"
-        }}>
-            <div style={{
-                width: "20%"
-            }}>
+        <Row gap>
+            <Padding>
                 <div style={{
-                    display: "flex",
-                    "flex-direction": "column",
-                    gap: "0.5rem"
+                    width: "20%"
+                }}>
+                    <div style={{
+                        display: "flex",
+                        "flex-direction": "column",
+                        gap: "0.5rem"
+                    }}>
+                        <div style={{
+                            padding: "1rem"
+                        }}>
+                            <span style={{
+                                "font-size": "2rem"
+                            }}>
+                        Files
+                    </span>
+                        </div>
+                        <div style={{
+                            display: "flex",
+                            "flex-direction": "column",
+                            gap: "0.5rem"
+                        }}>
+                            <For each={files()}>{(file) => (
+                                <button onClick={onFileChange(file)}>
+                                    {file}
+                                </button>
+                            )}</For>
+                        </div>
+                    </div>
+                </div>
+                <div style={{
+                    width: "calc(80% - 1rem)"
                 }}>
                     <div style={{
                         padding: "1rem"
@@ -54,44 +75,20 @@ function App() {
                     <span style={{
                         "font-size": "2rem"
                     }}>
-                        Files
-                    </span>
-                    </div>
-                    <div style={{
-                        display: "flex",
-                        "flex-direction": "column",
-                        gap: "0.5rem"
-                    }}>
-                        <For each={files()}>{(file) => (
-                            <button onClick={onFileChange(file)}>
-                                {file}
-                            </button>
-                        )}</For>
-                    </div>
-                </div>
-            </div>
-            <div style={{
-                width: "calc(80% - 1rem)"
-            }}>
-                <div style={{
-                    padding: "1rem"
-                }}>
-                    <span style={{
-                        "font-size": "2rem"
-                    }}>
                       {currentFile()}
                     </span>
+                    </div>
+                    <div>
+                        <For each={currentFileContent()}>{(line) => {
+                            return <div style={{
+                                "min-height": "1rem"
+                            }}>{line}</div>
+                        }}
+                        </For>
+                    </div>
                 </div>
-                <div>
-                    <For each={currentFileContent()}>{(line) => {
-                        return <div style={{
-                            "min-height": "1rem"
-                        }}>{line}</div>
-                    }}
-                    </For>
-                </div>
-            </div>
-        </div>
+            </Padding>
+        </Row>
     )
 }
 

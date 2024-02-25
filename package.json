@@ -2,10 +2,17 @@
   "name": "ide",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./electron/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "tsc -p ./tsconfig.json && electron ."
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "electron": "^29.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.19",
+    "typescript": "^5.2.2"
+  }
 }
