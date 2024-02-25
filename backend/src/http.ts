@@ -47,17 +47,6 @@ export function InternalServerErrorResponseFromUnknown(error: JSUnknown): Respon
     }
 }
 
-export function InternalServerErrorResponseFromError(error: Error): Response {
-    return {
-        status: 500,
-        body: JSUnknown(error)
-    }
-}
-
-export function RouteError(value: JSUnknown): Error {
-    return new Error(value.asJSON());
-}
-
 export function $Route(route: (context: ContextWrapper) => Promise<Response>) {
     return async function (context: ContextWrapper) {
         const response = await $AsyncResultToType<Response, Response>(async () => await route(context))

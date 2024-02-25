@@ -2,6 +2,8 @@ import {createSignal, For, onMount} from 'solid-js'
 import './App.css'
 import axios from "axios";
 
+const ROOT_URL = "http://localhost:3000";
+
 function App() {
     const [files, setFiles] = createSignal<string[]>([]);
     const [currentFile, setCurrentFile] = createSignal<string | undefined>(undefined);
@@ -10,7 +12,7 @@ function App() {
     onMount(async () => {
         let response = await axios({
             method: "get",
-            url: "http://localhost:3000/file"
+            url: ROOT_URL + "/file"
         });
 
         setFiles(response.data.sort());
@@ -22,7 +24,7 @@ function App() {
 
             const response = await axios({
                 method: "get",
-                url: "http://localhost:3000/file/" + file
+                url: ROOT_URL + "/file/" + file
             });
 
             setCurrentFileContent(response.data.split("\n"));
