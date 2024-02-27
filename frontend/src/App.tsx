@@ -66,26 +66,24 @@ function App() {
                         </div>
                     </div>
                 </div>
-                <div style={{
-                    width: "calc(80% - 1rem)"
-                }}>
-                    <div style={{
-                        padding: "1rem"
-                    }}>
-                    <span style={{
-                        "font-size": "2rem"
-                    }}>
-                      {currentFile()}
-                    </span>
-                    </div>
-                    <div>
-                        <For each={currentFileContent()}>{(line) => {
-                            return <div style={{
-                                "min-height": "1rem"
-                            }}>{line}</div>
-                        }}
-                        </For>
-                    </div>
+                <div>
+                    <Padding>
+                        <>
+                          <span style={{
+                              "font-size": "2rem"
+                          }}>
+                          {currentFile()}
+                        </span>
+                            <div>
+                                <For each={currentFileContent()}>{(line) => {
+                                    return <div style={{
+                                        "min-height": "1rem"
+                                    }}>{line}</div>
+                                }}
+                                </For>
+                            </div>
+                        </>
+                    </Padding>
                 </div>
             </Padding>
         </Row>

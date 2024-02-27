@@ -22,7 +22,9 @@ export function Flex({direction, children, gap}: FlexProps) {
         <div style={{
             display: "flex",
             "flex-direction": direction,
-            gap: actualGap
+            gap: actualGap,
+            width: "100%",
+            height: "100%"
         }}>
             {children}
         </div>
