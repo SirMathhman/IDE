@@ -21,6 +21,9 @@ importers:
 
   backend:
     dependencies:
+      '@ide/common':
+        specifier: workspace:^
+        version: link:../common
       '@koa/cors':
         specifier: ^5.0.0
         version: 5.0.0
@@ -64,6 +67,9 @@ importers:
 
   frontend:
     dependencies:
+      '@ide/common':
+        specifier: workspace:^
+        version: link:../common
       axios:
         specifier: ^1.6.7
         version: 1.6.7

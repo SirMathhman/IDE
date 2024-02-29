@@ -1,16 +1,27 @@
 import './App.css';
 import {createSignal, For, onMount, Show} from "solid-js";
-import axios from "axios";
+import axios, {AxiosError, AxiosRequestConfig, AxiosResponse} from "axios";
+import {$AsyncResult, AsyncResult, Ok} from "@ide/common";
+
+function applyAxios(config: AxiosRequestConfig): AsyncResult<AxiosResponse, AxiosError> {
+    return $AsyncResult<AxiosResponse>(() => {
+        return axios(config);
+    }).mapErr(e => {
+        return e as AxiosError;
+    });
+}
 
 function App() {
-    const [files, setFiles] = createSignal([]);
+    const [files, setFiles] = createSignal<string[]>([]);
     const [errorText, setText] = createSignal<string | undefined>(undefined);
 
     onMount(async () => {
-        axios({
+        applyAxios({
             method: "get",
             url: "http://localhost:3000/file"
-        }).then(response => setFiles(response.data)).catch(e => {
+        }).mapValueToResult(response => {
+            return Ok(response.data as string[]);
+        }).consumeSync(files => setFiles(files), e => {
             setText(JSON.stringify(e));
         });
     });
