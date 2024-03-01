@@ -1,67 +1,18 @@
-export interface Result<T, E> {
-    mapErr<R>(mapper: (e: E) => R): Result<T, R>;
+import {Err, Ok, Result} from "./result";
 
-    mapValueToResult<R>(mapper: (value: T) => Result<R, E>): Result<R, E>;
+export * from "./option";
+export * from "./result";
+export * from "./stream";
 
-    match<R>(onOk: (value: T) => R, onErr: (e: E) => R): R;
+export function parseString(value: unknown): Result<string, CastError> {
+    return typeof value === "string"
+        ? Ok(value)
+        : Err(new CastError(value, "string"));
 }
 
-export function Ok<T, E>(value: T): Result<T, E> {
-    return {
-        mapErr<R>(): Result<T, R> {
-            return Ok(value);
-        },
-        mapValueToResult<R>(mapper: (value: T) => Result<R, E>): Result<R, E> {
-            return mapper(value);
-        },
-        match<R>(onOk: (value: T) => R): R {
-            return onOk(value);
-        }
+export class CastError extends Error {
+    constructor(value: unknown, expectedType: string) {
+        super(`Expected a type of '${expectedType}' but was actually '${typeof value}' for value:
+${value}`);
     }
-}
-
-export function Err<T, E>(err: E): Result<T, E> {
-    return {
-        mapErr<R>(mapper: (e: E) => R): Result<T, R> {
-            return Err(mapper(err));
-        },
-        mapValueToResult<R>(): Result<R, E> {
-            return Err(err);
-        },
-        match<R>(_: (value: T) => R, onErr: (e: E) => R): R {
-            return onErr(err);
-        }
-    }
-}
-
-export interface AsyncResult<T, E> {
-    consumeSync(onOk: (value: T) => void, onErr: (e: E) => void): void;
-
-    mapErr<R>(mapper: (e: E) => R): AsyncResult<T, R>;
-
-    mapValueToResult<R>(mapper: (value: T) => Result<R, E>): AsyncResult<R, E>;
-}
-
-function AsyncResult<T, E>(promise: Promise<Result<T, E>>): AsyncResult<T, E> {
-    return {
-        mapErr<R>(mapper: (e: E) => R): AsyncResult<T, R> {
-            return AsyncResult(promise.then(result => result.mapErr(mapper)));
-        },
-        mapValueToResult<R>(mapper: (value: T) => Result<R, E>): AsyncResult<R, E> {
-            return AsyncResult(promise.then(result => result.mapValueToResult(mapper)));
-        },
-        consumeSync(onOk: (value: T) => void, onErr: (e: E) => void): void {
-            promise.then(result => result.match(onOk, onErr))
-        }
-    }
-}
-
-export function $AsyncResult<T>(promise: () => Promise<T>): AsyncResult<T, unknown> {
-    return AsyncResult(new Promise<Result<T, unknown>>(async resolve => {
-        try {
-            resolve(Ok(await promise()));
-        } catch (e) {
-            resolve(Err(e));
-        }
-    }));
 }

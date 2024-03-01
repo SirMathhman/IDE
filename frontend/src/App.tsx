@@ -1,7 +1,7 @@
 import './App.css';
 import {createSignal, For, onMount, Show} from "solid-js";
 import axios, {AxiosError, AxiosRequestConfig, AxiosResponse} from "axios";
-import {$AsyncResult, AsyncResult, Ok} from "@ide/common";
+import {$AsyncResult, AsyncResult, Err, exceptionally, parseString, streamFromArray, toArray} from "@ide/common";
 
 function applyAxios(config: AxiosRequestConfig): AsyncResult<AxiosResponse, AxiosError> {
     return $AsyncResult<AxiosResponse>(() => {
@@ -9,6 +9,14 @@ function applyAxios(config: AxiosRequestConfig): AsyncResult<AxiosResponse, Axio
     }).mapErr(e => {
         return e as AxiosError;
     });
+}
+
+export function APIErrorFromMessage(message: string): Error {
+    return Error(message);
+}
+
+export function APIErrorFromCause(cause: Error): Error {
+    return Error(cause.message);
 }
 
 function App() {
@@ -19,11 +27,22 @@ function App() {
         applyAxios({
             method: "get",
             url: "http://localhost:3000/file"
-        }).mapValueToResult(response => {
-            return Ok(response.data as string[]);
-        }).consumeSync(files => setFiles(files), e => {
-            setText(JSON.stringify(e));
-        });
+        }).mapErr(err => {
+            return APIErrorFromMessage(err.message);
+        }).mapValueToResult<string[]>(response => {
+            const {data} = response;
+            if (!Array.isArray(data)) return Err(APIErrorFromMessage("Not an array."));
+            return streamFromArray(data)
+                .map(entry => parseString(entry))
+                .map(result => result.mapErr(APIErrorFromCause))
+                .collect(exceptionally(toArray()));
+        }).consumeSync(
+            files => {
+                console.log(files);
+                setFiles(files);
+            },
+            e => setText(e.message)
+        );
     });
 
     return (
