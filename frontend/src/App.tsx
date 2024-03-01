@@ -20,13 +20,18 @@ export function APIErrorFromCause(cause: Error): Error {
 }
 
 function App() {
+    const [path, _] = createSignal(".");
     const [files, setFiles] = createSignal<string[]>([]);
+
     const [errorText, setText] = createSignal<string | undefined>(undefined);
 
     onMount(async () => {
         applyAxios({
             method: "get",
-            url: "http://localhost:3000/file"
+            url: "http://localhost:3000/file",
+            params: {
+                path: path()
+            }
         }).mapErr(err => {
             return APIErrorFromMessage(err.message);
         }).mapValueToResult<string[]>(response => {
