@@ -3,8 +3,8 @@ import {promises as fs} from "fs";
 import cors from "@koa/cors";
 import Router from "koa-router";
 import {$Route, BadRequest, ContextWrapper, InternalServerErrorResponseFromUnknown, OkResponse, Response} from "./http";
-import {$AsyncResultUnknown, ThrowableOption} from "./result";
-import {JSUnknown} from "./js";
+import {$AsyncResultUnknown, ThrowableOption} from "@ide/common";
+import {JSUnknown} from "@ide/common/src/js";
 
 async function readFiles(): Promise<Response> {
     try {
@@ -18,12 +18,10 @@ async function readChild(context: ContextWrapper) {
     const params = context.routeParams;
     const child = params.get("child")
         .into(ThrowableOption)
-        .orElseErr(() => BadRequest("No child response."))
-        .$();
+        .orElseErr(() => BadRequest("No child response.")).$;
 
     const output = await $AsyncResultUnknown(async () => await fs.readFile(child))
-        .mapErr(InternalServerErrorResponseFromUnknown)
-        .$();
+        .mapErr(InternalServerErrorResponseFromUnknown).$;
 
     return OkResponse(JSUnknown(output));
 }

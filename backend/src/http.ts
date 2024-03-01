@@ -1,6 +1,6 @@
 import Application, {ParameterizedContext} from "koa";
-import {$AsyncResultToType} from "./result";
-import {JSUnknown} from "./js";
+import {$AsyncResultToType} from "@ide/common";
+import {JSUnknown} from "@ide/common/src/js";
 import {jsMapFromRecord, Map} from "./collect";
 
 export class ContextWrapper {
