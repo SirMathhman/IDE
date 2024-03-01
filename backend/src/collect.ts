@@ -1,4 +1,4 @@
-import {None, Option, Some} from "./option";
+import {None, Option, Some} from "@ide/common";
 
 export interface Map<K, V> {
     get(key: K): Option<V>;

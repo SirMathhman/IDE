@@ -1,5 +1,5 @@
 import {JSUnknown} from "./js";
-import {Option} from "./option";
+import {Option} from "@ide/common";
 
 interface Result<T, E> {
     $(): T;
