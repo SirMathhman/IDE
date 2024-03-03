@@ -2,10 +2,11 @@ import './App.css';
 import {createSignal, For, onMount, Show} from "solid-js";
 import axios, {AxiosError, AxiosRequestConfig, AxiosResponse} from "axios";
 import {$AsyncResult, AsyncResult, Err, exceptionally, parseString, streamFromArray, toArray} from "@ide/common";
-import {Center, Column} from "./Flex.tsx";
+import {Center, Column, Row} from "./Flex.tsx";
 import {Padding} from "./Padding.tsx";
 import {Box, Sheet} from "./Container.tsx";
 import {FontSize, Text} from "./Text.tsx";
+import {Icon, IconValue} from "./Icon.tsx";
 
 function applyAxios(config: AxiosRequestConfig): AsyncResult<AxiosResponse, AxiosError> {
     return $AsyncResult<AxiosResponse>(() => {
@@ -76,19 +77,26 @@ function App() {
                                     Open a Directory
                                 </Text>
                                 <Box compact>
-                                    <Sheet border="1px solid black" rounded="0.25rem">
-                                        <Padding amount="0.25rem">
-                                            <Column>
-                                                <Text size={FontSize.Small}>
-                                                    Path
-                                                </Text>
-                                                <input style={{
-                                                    border: "none",
-                                                    "font-size": FontSize.Normal
-                                                }}/>
-                                            </Column>
-                                        </Padding>
-                                    </Sheet>
+                                    <Row gap="0.5rem" align="center">
+                                        <Sheet border="1px solid black" rounded="0.25rem">
+                                            <Padding amount="0.25rem">
+                                                <Column>
+                                                    <Text size={FontSize.Small}>
+                                                        Path
+                                                    </Text>
+                                                    <input style={{
+                                                        border: "none",
+                                                        "font-size": FontSize.Normal
+                                                    }}/>
+                                                </Column>
+                                            </Padding>
+                                        </Sheet>
+                                        <Box compact>
+                                            <button>
+                                                <Icon value={IconValue.UpArrow}/>
+                                            </button>
+                                        </Box>
+                                    </Row>
                                 </Box>
                                 <hr style={{
                                     width: "100%"
