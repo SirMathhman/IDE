@@ -2,4 +2,4 @@ export * from "./option";
 export * from "./result";
 export * from "./stream";
 export * from "./cast";
-export * from "./file";
+export * from "./path";

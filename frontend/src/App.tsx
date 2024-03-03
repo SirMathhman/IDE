@@ -1,67 +1,37 @@
 import './App.css';
 import {createSignal, For, onMount, Show} from "solid-js";
-import axios, {AxiosError, AxiosRequestConfig, AxiosResponse} from "axios";
-import {$AsyncResult, AsyncResult, Err, exceptionally, Result, streamFromArray, toArray} from "@ide/common";
+import {Directory, None, Option, Path} from "@ide/common";
 import {Center, Column, Row} from "./Flex.tsx";
 import {Padding} from "./Padding.tsx";
 import {Box, Sheet} from "./Container.tsx";
 import {FontSize, Text} from "./Text.tsx";
 import {Icon, IconValue} from "./Icon.tsx";
-import {parseString} from "@ide/common/src/cast.ts";
-import {JSUnknown} from "@ide/common/src/js.ts";
-import {File} from "@ide/common";
-
-namespace File {
-    export function findCurrentWorkingDirectory(): Result<File.Path, JSUnknown> {
-        return Err(JSUnknown("Not implemented yet."));
-    }
-}
-
-function applyAxios(config: AxiosRequestConfig): AsyncResult<AxiosResponse, AxiosError> {
-    return $AsyncResult<AxiosResponse>(() => {
-        return axios(config);
-    }).mapErr(e => {
-        return e as AxiosError;
-    });
-}
-
-export function APIErrorFromMessage(message: string): Error {
-    return Error(message);
-}
-
-export function APIErrorFromCause(cause: Error): Error {
-    return Error(cause.message);
-}
+import {AxiosPaths} from "./path.ts";
 
 function App() {
-    const [path, _] = createSignal(".");
+    const [path, _] = createSignal<Option<Directory>>(None());
+
     const [files, setFiles] = createSignal<string[]>([]);
 
     const [errorText, setText] = createSignal<string | undefined>(undefined);
 
-    onMount(async () => {
-        applyAxios({
-            method: "get",
-            url: "http://localhost:3000/file",
-            params: {
-                path: path()
-            }
-        }).mapErr(err => {
-            return APIErrorFromMessage(err.message);
-        }).mapValueToResult<string[]>(response => {
-            const {data} = response;
-            if (!Array.isArray(data)) return Err(APIErrorFromMessage("Not an array."));
-            return streamFromArray(data)
-                .map(entry => parseString(entry))
-                .map(result => result.mapErr(APIErrorFromCause))
-                .collect(exceptionally(toArray()));
-        }).consumeSync(
-            files => {
-                console.log(files);
-                setFiles(files);
-            },
-            e => setText(e.message)
-        );
+    function filterFiles(paths: Path[]) {
+        return paths
+            .map(path => path.lastName())
+            .flatMap(option => option.map(value => [value]).orElse([]));
+    }
+
+    onMount(() => {
+        AxiosPaths.findCurrentWorkingDirectory()
+            .mapValueToAsyncResult(directory => directory.listPaths())
+            .mapValue(paths => filterFiles(paths))
+            .consumeSync(
+                files => {
+                    console.log(files);
+                    setFiles(files);
+                },
+                e => setText(e.message)
+            );
     });
 
     return (
@@ -70,15 +40,14 @@ function App() {
                 <Sheet elevated rounded>
                     <Padding>
                         <Show when={errorText()}>
-                     <span style={{
-                         "font-family": "Arial",
-                         "font-size": "2rem"
-                     }}>
-                         Failed to Read Files
-                </span>
-                            <span>
-                        {errorText()}
-                    </span>
+                            <Column gap="0.25rem">
+                                <Text color="red" size={FontSize.Large}>
+                                    Failed to Read Files
+                                </Text>
+                                <Text color="red">
+                                    {errorText()}
+                                </Text>
+                            </Column>
                         </Show>
                         <Show when={!errorText()}>
                             <Column gap="0.25rem">

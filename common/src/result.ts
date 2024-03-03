@@ -72,18 +72,44 @@ export interface AsyncResult<T, E> {
 
     mapValue<R>(mapper: (e: T) => R): AsyncResult<R, E>;
 
+    mapValueToAsyncResult<R>(mapper: (value: T) => AsyncResult<R, E>): AsyncResult<R, E>;
+
     mapValueToResult<R>(mapper: (value: T) => Result<R, E>): AsyncResult<R, E>;
 
     match<R>(onOk: (value: T) => R, onErr: (error: E) => R): Promise<R>;
+
+    then(consumer: (result: Result<T, E>) => void): void;
 }
 
-function AsyncResult<T, E>(parent: Promise<Result<T, E>>): AsyncResult<T, E> {
+export function AsyncResult<T, E>(parent: Promise<Result<T, E>>): AsyncResult<T, E> {
     return {
+        then(consumer: (result: Result<T, E>) => void) {
+            parent.then(consumer).catch(e => {
+                console.error("Failed to catch error AsyncResult.");
+                console.error("The function threw an Error object instead of returning an Err instance.");
+                console.error(e);
+            })
+        },
         mapErr<R>(mapper: (e: E) => R): AsyncResult<T, R> {
             return AsyncResult(parent.then(result => result.mapErr(mapper)));
         },
         mapValueToResult<R>(mapper: (value: T) => Result<R, E>): AsyncResult<R, E> {
             return AsyncResult(parent.then(result => result.mapValueToResult(mapper)));
+        }, mapValueToAsyncResult<R>(mapper: (value: T) => AsyncResult<R, E>): AsyncResult<R, E> {
+            return AsyncResult(new Promise(async (resolve) => {
+                /*
+                This is a wonky implementation.
+
+                TODO: clean this up.
+
+                - SirMathhman, 3/2/2024
+                 */
+                const parentValue = await parent;
+                parentValue.mapValue(mapper).match(
+                    value => value,
+                    err => AsyncResult(Promise.resolve(Err(err)))
+                ).then(resolve);
+            }));
         },
         consumeSync(onOk: (value: T) => void, onErr: (e: E) => void): void {
             parent.then(

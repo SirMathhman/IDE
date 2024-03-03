@@ -5,6 +5,8 @@ export interface Option<T> {
 
     map<R>(mapper: (element: T) => R): Option<R>;
 
+    orElse(other: T): T;
+
     orElseGet(supplier: () => T): T;
 
     toTuple(other: T): [boolean, T];
@@ -12,6 +14,9 @@ export interface Option<T> {
 
 export function Some<T>(value: T): Option<T> {
     return {
+        orElse(): T {
+            return value
+        },
         orElseGet(): T {
             return value;
         },
@@ -30,6 +35,9 @@ export function Some<T>(value: T): Option<T> {
 
 export function None<T>(): Option<T> {
     return {
+        orElse(other: T): T {
+            return other;
+        },
         orElseGet(supplier: () => T): T {
             return supplier();
         },

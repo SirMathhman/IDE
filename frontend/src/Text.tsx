@@ -7,13 +7,15 @@ export enum FontSize {
 }
 
 export interface TextProps {
+    color?: string;
     children: JSX.Element;
     size?: FontSize;
 }
 
-export function Text({children, size}: TextProps) {
+export function Text({color, children, size}: TextProps) {
     return (
         <span style={{
+            color,
             "font-family": "Arial",
             "font-size": size ?? FontSize.Normal
         }}>
