@@ -93,11 +93,13 @@ function App() {
                                 <hr style={{
                                     width: "100%"
                                 }}/>
-                                <Column>
+                                <Column gap="0.5rem">
                                     <For each={files()}>{(file) => (
-                                        <Text>
-                                            {file}
-                                        </Text>
+                                        <button>
+                                            <Text>
+                                                {file}
+                                            </Text>
+                                        </button>
                                     )}</For>
                                 </Column>
                             </Column>
