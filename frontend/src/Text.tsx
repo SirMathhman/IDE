@@ -1,8 +1,9 @@
 import {JSX} from "solid-js";
 
 export enum FontSize {
+    Small = "0.75rem",
     Normal = "1rem",
-    Large = "2rem"
+    Large = "2rem",
 }
 
 export interface TextProps {

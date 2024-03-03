@@ -71,15 +71,35 @@ function App() {
                     </span>
                         </Show>
                         <Show when={!errorText()}>
-                            <Text size={FontSize.Large}>
-                                Open a Directory
-                            </Text>
-                            <Column>
-                                <For each={files()}>{(file) => (
-                                    <Text>
-                                        {file}
-                                    </Text>
-                                )}</For>
+                            <Column gap="0.25rem">
+                                <Text size={FontSize.Large}>
+                                    Open a Directory
+                                </Text>
+                                <Box compact>
+                                    <Sheet border="1px solid black" rounded="0.25rem">
+                                        <Padding amount="0.25rem">
+                                            <Column>
+                                                <Text size={FontSize.Small}>
+                                                    Path
+                                                </Text>
+                                                <input style={{
+                                                    border: "none",
+                                                    "font-size": FontSize.Normal
+                                                }}/>
+                                            </Column>
+                                        </Padding>
+                                    </Sheet>
+                                </Box>
+                                <hr style={{
+                                    width: "100%"
+                                }}/>
+                                <Column>
+                                    <For each={files()}>{(file) => (
+                                        <Text>
+                                            {file}
+                                        </Text>
+                                    )}</For>
+                                </Column>
                             </Column>
                         </Show>
                     </Padding>

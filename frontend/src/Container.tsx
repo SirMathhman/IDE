@@ -19,13 +19,14 @@ export function Box({width, height, children, compact}: BoxProps) {
 }
 
 export interface SheetProps {
+    border?: string;
     children: JSX.Element;
     elevated?: number | boolean;
-    rounded?: boolean;
+    rounded?: string | boolean;
 }
 
-export function Sheet({children, elevated, rounded}: SheetProps) {
-    let elevationValue : number | undefined;
+export function Sheet({children, elevated, rounded, border}: SheetProps) {
+    let elevationValue: number | undefined;
     if (typeof elevated === "number") {
         elevationValue = elevated;
     } else if (elevated) {
@@ -34,12 +35,22 @@ export function Sheet({children, elevated, rounded}: SheetProps) {
         elevationValue = undefined;
     }
 
+    let actualRounded : string | undefined;
+    if(typeof rounded === "string") {
+        actualRounded = rounded;
+    } else if(rounded) {
+        actualRounded = "1rem";
+    } else {
+        actualRounded = undefined;
+    }
+
     return (
         <div style={{
             width: "100%",
             height: "100%",
             "box-shadow": `0 0 calc(5px * ${elevationValue}) 0px`,
-            "border-radius": rounded ? "1rem" : undefined
+            "border-radius": actualRounded,
+            border: border
         }}>
             {children}
         </div>
