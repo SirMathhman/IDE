@@ -12,7 +12,6 @@ export function parseString(value: unknown): Result<string, CastError> {
 
 export class CastError extends Error {
     constructor(value: unknown, expectedType: string) {
-        super(`Expected a type of '${expectedType}' but was actually '${typeof value}' for value:
-${value}`);
+        super(`Expected a type of '${expectedType}' but was actually '${typeof value}' for value:\n${value}`);
     }
 }
