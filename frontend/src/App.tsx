@@ -2,6 +2,7 @@ import './App.css';
 import {createSignal, For, onMount, Show} from "solid-js";
 import axios, {AxiosError, AxiosRequestConfig, AxiosResponse} from "axios";
 import {$AsyncResult, AsyncResult, Err, exceptionally, parseString, streamFromArray, toArray} from "@ide/common";
+import {Column} from "./Flex.tsx";
 
 function applyAxios(config: AxiosRequestConfig): AsyncResult<AxiosResponse, AxiosError> {
     return $AsyncResult<AxiosResponse>(() => {
@@ -73,13 +74,15 @@ function App() {
                      }}>
                     Open a Directory
                 </span>
-                    <For each={files()}>{(file) => {
-                        return (
-                            <>
-                                {file}
-                            </>
-                        )
-                    }}</For>
+                    <Column>
+                        <For each={files()}>{(file) => {
+                            return (
+                                <span>
+                                    {file}
+                                </span>
+                            )
+                        }}</For>
+                    </Column>
                 </Show>
                 <Show when={errorText()}>
                      <span style={{
