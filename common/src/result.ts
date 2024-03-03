@@ -93,7 +93,7 @@ export interface AsyncResult<T, E> {
 
 export function AsyncResult<T, E>(parent: Promise<Result<T, E>>): AsyncResult<T, E> {
     return {
-        async consume(onOk: (value: T) => void, onErr: (error: E) => void): Promise<void> {
+        async consume(onErr: (error: E) => void, onOk: (value: T) => void): Promise<void> {
             (await parent).consume(onOk, onErr);
         },
         then(consumer: (result: Result<T, E>) => void) {
@@ -124,7 +124,7 @@ export function AsyncResult<T, E>(parent: Promise<Result<T, E>>): AsyncResult<T,
                 ).then(resolve);
             }));
         },
-        consumeSync(onOk: (value: T) => void, onErr: (e: E) => void): void {
+        consumeSync(onErr: (e: E) => void, onOk: (value: T) => void): void {
             parent.then(
                 result => result.match(onOk, onErr)
             )
