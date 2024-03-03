@@ -3,6 +3,8 @@ import {createSignal, For, onMount, Show} from "solid-js";
 import axios, {AxiosError, AxiosRequestConfig, AxiosResponse} from "axios";
 import {$AsyncResult, AsyncResult, Err, exceptionally, parseString, streamFromArray, toArray} from "@ide/common";
 import {Center, Column} from "./Flex.tsx";
+import {Padding} from "./Padding.tsx";
+import {Box, Sheet} from "./Container.tsx";
 
 function applyAxios(config: AxiosRequestConfig): AsyncResult<AxiosResponse, AxiosError> {
     return $AsyncResult<AxiosResponse>(() => {
@@ -53,42 +55,40 @@ function App() {
 
     return (
         <Center>
-            <div style={{
-                width: "50%",
-                height: "50%",
-                "box-shadow": "0 0 10px 0px",
-                "border-radius": "1rem",
-                padding: "1rem"
-            }}>
-                <Show when={!errorText()}>
+            <Box width="50%" height="50%" compact>
+                <Sheet elevated rounded>
+                    <Padding>
+                        <Show when={!errorText()}>
                      <span style={{
                          "font-family": "Arial",
                          "font-size": "2rem"
                      }}>
                     Open a Directory
                 </span>
-                    <Column>
-                        <For each={files()}>{(file) => {
-                            return (
-                                <span>
+                            <Column>
+                                <For each={files()}>{(file) => {
+                                    return (
+                                        <span>
                                     {file}
                                 </span>
-                            )
-                        }}</For>
-                    </Column>
-                </Show>
-                <Show when={errorText()}>
+                                    )
+                                }}</For>
+                            </Column>
+                        </Show>
+                        <Show when={errorText()}>
                      <span style={{
                          "font-family": "Arial",
                          "font-size": "2rem"
                      }}>
                          Failed to Read Files
                 </span>
-                    <span>
+                            <span>
                         {errorText()}
                     </span>
-                </Show>
-            </div>
+                        </Show>
+                    </Padding>
+                </Sheet>
+            </Box>
         </Center>
     )
 }
