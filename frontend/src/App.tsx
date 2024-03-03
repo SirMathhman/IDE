@@ -5,6 +5,7 @@ import {$AsyncResult, AsyncResult, Err, exceptionally, parseString, streamFromAr
 import {Center, Column} from "./Flex.tsx";
 import {Padding} from "./Padding.tsx";
 import {Box, Sheet} from "./Container.tsx";
+import {FontSize, Text} from "./Text.tsx";
 
 function applyAxios(config: AxiosRequestConfig): AsyncResult<AxiosResponse, AxiosError> {
     return $AsyncResult<AxiosResponse>(() => {
@@ -58,23 +59,6 @@ function App() {
             <Box width="50%" height="50%" compact>
                 <Sheet elevated rounded>
                     <Padding>
-                        <Show when={!errorText()}>
-                     <span style={{
-                         "font-family": "Arial",
-                         "font-size": "2rem"
-                     }}>
-                    Open a Directory
-                </span>
-                            <Column>
-                                <For each={files()}>{(file) => {
-                                    return (
-                                        <span>
-                                    {file}
-                                </span>
-                                    )
-                                }}</For>
-                            </Column>
-                        </Show>
                         <Show when={errorText()}>
                      <span style={{
                          "font-family": "Arial",
@@ -85,6 +69,18 @@ function App() {
                             <span>
                         {errorText()}
                     </span>
+                        </Show>
+                        <Show when={!errorText()}>
+                            <Text size={FontSize.Large}>
+                                Open a Directory
+                            </Text>
+                            <Column>
+                                <For each={files()}>{(file) => (
+                                    <Text>
+                                        {file}
+                                    </Text>
+                                )}</For>
+                            </Column>
                         </Show>
                     </Padding>
                 </Sheet>
