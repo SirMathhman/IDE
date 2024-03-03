@@ -8,6 +8,8 @@ export interface Result<T, E> {
 
     and<R>(other: Result<R, E>): Result<[T, R], E>;
 
+    consume(onOk: (value: T) => void, onErr: (error: E) => void): void;
+
     mapErr<R>(mapper: (e: E) => R): Result<T, R>;
 
     mapValue<R>(mapper: (value: T) => R): Result<R, E>;
@@ -19,6 +21,9 @@ export interface Result<T, E> {
 
 export function Ok<T, E>(value: T): Result<T, E> {
     return {
+        consume(onOk: (value: T) => void) {
+            onOk(value);
+        },
         $: value,
         value: Some(value),
         mapValue<R>(mapper: (value: T) => R): Result<R, E> {
@@ -41,6 +46,9 @@ export function Ok<T, E>(value: T): Result<T, E> {
 
 export function Err<T, E>(err: E): Result<T, E> {
     return {
+        consume(_: (value: T) => void, onErr: (error: E) => void) {
+            onErr(err);
+        },
         get $(): T {
             throw err;
         },
@@ -66,7 +74,9 @@ export function Err<T, E>(err: E): Result<T, E> {
 export interface AsyncResult<T, E> {
     $: Promise<T>;
 
-    consumeSync(onOk: (value: T) => void, onErr: (e: E) => void): void;
+    consume(onErr: (error: E) => void, onOk: (value: T) => void): Promise<void>;
+
+    consumeSync(onErr: (e: E) => void, onOk: (value: T) => void): void;
 
     mapErr<R>(mapper: (e: E) => R): AsyncResult<T, R>;
 
@@ -83,6 +93,9 @@ export interface AsyncResult<T, E> {
 
 export function AsyncResult<T, E>(parent: Promise<Result<T, E>>): AsyncResult<T, E> {
     return {
+        async consume(onOk: (value: T) => void, onErr: (error: E) => void): Promise<void> {
+            (await parent).consume(onOk, onErr);
+        },
         then(consumer: (result: Result<T, E>) => void) {
             parent.then(consumer).catch(e => {
                 console.error("Failed to catch error AsyncResult.");

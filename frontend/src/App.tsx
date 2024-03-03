@@ -1,6 +1,6 @@
 import './App.css';
-import {createSignal, For, onMount, Show} from "solid-js";
-import {Directory, None, Option, Path} from "@ide/common";
+import {createMemo, createSignal, For, onMount, Show} from "solid-js";
+import {Directory, None, Option, Path, PathError, Some} from "@ide/common";
 import {Center, Column, Row} from "./Flex.tsx";
 import {Padding} from "./Padding.tsx";
 import {Box, Sheet} from "./Container.tsx";
@@ -9,10 +9,8 @@ import {Icon, IconValue} from "./Icon.tsx";
 import {AxiosPaths} from "./path.ts";
 
 function App() {
-    const [path, _] = createSignal<Option<Directory>>(None());
-
+    const [currentDirectory, setCurrentDirectory] = createSignal<Option<Directory>>(None());
     const [files, setFiles] = createSignal<string[]>([]);
-
     const [errorText, setText] = createSignal<string | undefined>(undefined);
 
     function filterFiles(paths: Path[]) {
@@ -21,17 +19,20 @@ function App() {
             .flatMap(option => option.map(value => [value]).orElse([]));
     }
 
-    onMount(() => {
-        AxiosPaths.findCurrentWorkingDirectory()
-            .mapValueToAsyncResult(directory => directory.listPaths())
-            .mapValue(paths => filterFiles(paths))
-            .consumeSync(
-                files => {
-                    console.log(files);
-                    setFiles(files);
-                },
-                e => setText(e.message)
-            );
+    function handleErr(err: PathError) {
+        return setText(err.message);
+    }
+
+    onMount(async () => {
+        await AxiosPaths.findCurrentWorkingDirectory().consume(handleErr, directory => setCurrentDirectory(Some(directory)));
+    });
+
+    createMemo(() => {
+        currentDirectory().ifPresent(currentDirectoryValue => {
+            currentDirectoryValue.listPaths()
+                .mapValue(paths => filterFiles(paths))
+                .consumeSync(handleErr, files => setFiles(files));
+        });
     });
 
     return (
