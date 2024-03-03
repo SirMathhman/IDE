@@ -2,7 +2,7 @@ import './App.css';
 import {createSignal, For, onMount, Show} from "solid-js";
 import axios, {AxiosError, AxiosRequestConfig, AxiosResponse} from "axios";
 import {$AsyncResult, AsyncResult, Err, exceptionally, parseString, streamFromArray, toArray} from "@ide/common";
-import {Column} from "./Flex.tsx";
+import {Center, Column} from "./Flex.tsx";
 
 function applyAxios(config: AxiosRequestConfig): AsyncResult<AxiosResponse, AxiosError> {
     return $AsyncResult<AxiosResponse>(() => {
@@ -52,14 +52,7 @@ function App() {
     });
 
     return (
-        <div style={{
-            display: "flex",
-            "flex-direction": "row",
-            "justify-content": "center",
-            "align-items": "center",
-            width: "100%",
-            height: "100%"
-        }}>
+        <Center>
             <div style={{
                 width: "50%",
                 height: "50%",
@@ -96,7 +89,7 @@ function App() {
                     </span>
                 </Show>
             </div>
-        </div>
+        </Center>
     )
 }
 
