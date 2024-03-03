@@ -1,12 +1,21 @@
 import './App.css';
 import {createSignal, For, onMount, Show} from "solid-js";
 import axios, {AxiosError, AxiosRequestConfig, AxiosResponse} from "axios";
-import {$AsyncResult, AsyncResult, Err, exceptionally, parseString, streamFromArray, toArray} from "@ide/common";
+import {$AsyncResult, AsyncResult, Err, exceptionally, Result, streamFromArray, toArray} from "@ide/common";
 import {Center, Column, Row} from "./Flex.tsx";
 import {Padding} from "./Padding.tsx";
 import {Box, Sheet} from "./Container.tsx";
 import {FontSize, Text} from "./Text.tsx";
 import {Icon, IconValue} from "./Icon.tsx";
+import {parseString} from "@ide/common/src/cast.ts";
+import {JSUnknown} from "@ide/common/src/js.ts";
+import {File} from "@ide/common";
+
+namespace File {
+    export function findCurrentWorkingDirectory(): Result<File.Path, JSUnknown> {
+        return Err(JSUnknown("Not implemented yet."));
+    }
+}
 
 function applyAxios(config: AxiosRequestConfig): AsyncResult<AxiosResponse, AxiosError> {
     return $AsyncResult<AxiosResponse>(() => {
