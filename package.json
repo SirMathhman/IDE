@@ -9,10 +9,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "electron": "^29.0.1"
+    "electron": "^29.1.0"
   },
   "devDependencies": {
-    "@types/node": "^20.11.19",
-    "typescript": "^5.2.2"
+    "@types/node": "^20.11.24",
+    "typescript": "^5.3.3"
   }
 }
