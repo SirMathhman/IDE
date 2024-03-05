@@ -5,6 +5,7 @@ import Router from "koa-router";
 import {$Route, BadRequest, ContextWrapper, InternalServerErrorResponseFromError, OkResponse, Response} from "./http";
 import {$AsyncResultUnknown, ThrowableOption} from "@ide/common";
 import {JSUnknown} from "@ide/common/src/js";
+import bodyParser from "koa-bodyparser";
 
 async function readFiles(): Promise<Response> {
     return $AsyncResultUnknown(async () => await fs.readdir(process.cwd())).match(
@@ -48,6 +49,7 @@ function createRoutes() {
 function main() {
     const app = new Koa();
     app.use(cors());
+    app.use(bodyParser());
 
     let router = createRoutes();
     router.stack.forEach(layer => {
