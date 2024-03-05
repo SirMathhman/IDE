@@ -25,13 +25,17 @@ async function readChild(context: ContextWrapper) {
     return OkResponse(JSUnknown(output));
 }
 
-function createFileRoutes() {
+function findCurrentWorkingDirectory() {
+    return Promise.resolve(OkResponse(JSUnknown(process.cwd())));
+}
+
+function createRoutes() {
     const router = new Router({
-        prefix: "/file"
+        prefix: "/"
     });
 
-    router.get("/", async context => {
-        await $Route(readFiles)(new ContextWrapper(context));
+    router.get("/findCurrentWorkingDirectory", async context => {
+        await $Route(findCurrentWorkingDirectory)(new ContextWrapper(context));
     });
 
     router.get("/:child", async context => {
@@ -44,7 +48,14 @@ function createFileRoutes() {
 function main() {
     const app = new Koa();
     app.use(cors());
-    app.use(createFileRoutes().routes());
+
+    let router = createRoutes();
+    router.stack.forEach(layer => {
+        console.log(layer.path);
+    });
+
+    let routes = router.routes();
+    app.use(routes);
 
     app.listen(3000, () => {
         console.log('Server running on http://localhost:3000');
