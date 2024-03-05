@@ -2,16 +2,15 @@ import Koa from "koa";
 import {promises as fs} from "fs";
 import cors from "@koa/cors";
 import Router from "koa-router";
-import {$Route, BadRequest, ContextWrapper, InternalServerErrorResponseFromUnknown, OkResponse, Response} from "./http";
+import {$Route, BadRequest, ContextWrapper, InternalServerErrorResponseFromError, OkResponse, Response} from "./http";
 import {$AsyncResultUnknown, ThrowableOption} from "@ide/common";
 import {JSUnknown} from "@ide/common/src/js";
 
 async function readFiles(): Promise<Response> {
-    try {
-        return OkResponse(JSUnknown(await fs.readdir(process.cwd())));
-    } catch (e) {
-        return InternalServerErrorResponseFromUnknown(JSUnknown(e));
-    }
+    return $AsyncResultUnknown(async () => await fs.readdir(process.cwd())).match(
+        value => OkResponse(JSUnknown(value)),
+        error => InternalServerErrorResponseFromError(error)
+    );
 }
 
 async function readChild(context: ContextWrapper) {
@@ -21,7 +20,7 @@ async function readChild(context: ContextWrapper) {
         .orElseErr(() => BadRequest("No child response.")).$;
 
     const output = await $AsyncResultUnknown(async () => await fs.readFile(child))
-        .mapErr(InternalServerErrorResponseFromUnknown).$;
+        .mapErr(InternalServerErrorResponseFromError).$;
 
     return OkResponse(JSUnknown(output));
 }

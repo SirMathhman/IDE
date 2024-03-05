@@ -1,5 +1,5 @@
 import Application, {ParameterizedContext} from "koa";
-import {$AsyncResultToType} from "@ide/common";
+import {$AsyncResultToType, Error} from "@ide/common";
 import {JSUnknown} from "@ide/common/src/js";
 import {jsMapFromRecord, Map} from "./collect";
 
@@ -40,10 +40,10 @@ export function BadRequest(reason: string): Response {
     }
 }
 
-export function InternalServerErrorResponseFromUnknown(error: JSUnknown): Response {
+export function InternalServerErrorResponseFromError(error: Error): Response {
     return {
         status: 500,
-        body: error
+        body: JSUnknown(error.message)
     }
 }
 
