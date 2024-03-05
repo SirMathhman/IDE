@@ -1,5 +1,5 @@
 import {None, Option, Some} from "./option";
-import {JSUnknown} from "./js";
+import {Error} from "./error";
 
 export interface Result<T, E> {
     $: T;
@@ -170,8 +170,27 @@ export function $AsyncResultToType<T, E>(action: () => Promise<T>): AsyncResult<
     }));
 }
 
-export function $AsyncResultUnknown<T>(action: () => Promise<T>): AsyncResult<T, JSUnknown> {
-    return $AsyncResult(action).mapErr(JSUnknown);
+function formatMessage(rawMessage : unknown) {
+    if (typeof rawMessage === "string") {
+        return rawMessage;
+    } else if (rawMessage) {
+        return JSON.stringify(rawMessage);
+    } else {
+        return "No message provided.";
+    }
+}
+
+function createError(err : unknown) {
+    if (!(typeof err === "object" && err)) {
+        return Error(JSON.stringify(err));
+    } else {
+        const rawMessage = (err as Record<string, unknown | undefined>)["message"];
+        return Error(formatMessage(rawMessage));
+    }
+}
+
+export function $AsyncResultUnknown<T>(action: () => Promise<T>): AsyncResult<T, Error> {
+    return $AsyncResult(action).mapErr(createError);
 }
 
 export interface ThrowableOption<T> extends Option<T> {

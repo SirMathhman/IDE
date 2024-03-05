@@ -1,5 +1,9 @@
 export interface Option<T> {
+    isPresent: boolean;
+
     unwrap: T | undefined;
+
+    and<R>(other: Option<R>): Option<[T, R]>;
 
     ifPresent(consumer: (value: T) => void): void;
 
@@ -16,6 +20,10 @@ export interface Option<T> {
 
 export function Some<T>(value: T): Option<T> {
     return {
+        isPresent: true,
+        and<R>(other: Option<R>): Option<[T, R]> {
+            return other.map(otherValue => [value, otherValue]);
+        },
         ifPresent(consumer: (value: T) => void) {
             consumer(value);
         },
@@ -40,6 +48,10 @@ export function Some<T>(value: T): Option<T> {
 
 export function None<T>(): Option<T> {
     return {
+        isPresent: false,
+        and<R>(): Option<[T, R]> {
+            return None();
+        },
         ifPresent() {
         },
         orElse(other: T): T {

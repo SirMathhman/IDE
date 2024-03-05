@@ -1,28 +1,77 @@
-import {AsyncResult, Directory, Err, Path, PathError, Paths} from "@ide/common";
+import {
+    $AsyncResultUnknown,
+    AsyncResult,
+    CastError,
+    Directory,
+    Error,
+    ListPath,
+    ListType,
+    Path,
+    StringType,
+    ThrowableOption,
+    toImmutableList,
+    Type
+} from "@ide/common";
+import axios from "axios";
+import {ImmutableList, JSUnknown, List} from "@ide/common/src/js.ts";
 
-export const AxiosPaths: Paths = {
-    createEmptyPath(): Path {
-        return {}
-    },
-    findCurrentWorkingDirectory(): AsyncResult<Directory, PathError> {
-        /*
-                applyAxios({
-            method: "get",
-            url: "http://localhost:3000/file",
-            params: {
-                path: path()
+interface SafeConfig {
+    data?: JSUnknown,
+    method: string,
+    url: string
+}
+
+function safeAxios(safeConfig: SafeConfig) {
+    return $AsyncResultUnknown(() => {
+        const data = safeConfig.data;
+        return axios({
+            method: safeConfig.method,
+            url: safeConfig.url,
+            data: data?.unwrap()
+        });
+    });
+}
+
+function safeAxiosCasted<T>(config: SafeConfig, type: Type<T>) {
+    return safeAxios(config)
+        .mapValue(response => response.data)
+        .mapValue(data => JSUnknown(data))
+        .mapValueToResult(value => type.deserialize(value)
+            .into(ThrowableOption)
+            .orElseErr(() => new CastError(value.unwrap(), type.asString())));
+}
+
+export function AxiosPaths(url: string) {
+    function AxiosDirectory(location: Path): Directory {
+        return {
+            listPaths(): AsyncResult<List<Path>, Error> {
+                const config: SafeConfig = {
+                    method: "get",
+                    url: url + "/directory/listPaths",
+                    data: location.serialize()
+                };
+
+                return safeAxiosCasted(config, ListType(ListType(StringType)))
+                    .mapValue(value => {
+                        return value.stream().map(ListPath).collect(toImmutableList());
+                    });
             }
-        }).mapErr(err => {
-            return APIErrorFromMessage(err.message);
-        }).mapValueToResult<string[]>(response => {
-            const {data} = response;
-            if (!Array.isArray(data)) return Err(APIErrorFromMessage("Not an array."));
-            return streamFromArray(data)
-                .map(entry => parseString(entry))
-                .map(result => result.mapErr(APIErrorFromCause))
-                .collect(exceptionally(toArray()));
-        })
-         */
-        return AsyncResult(Promise.resolve(Err(PathError("Not implemented yet."))));
+        }
+    }
+
+    return {
+        createEmptyPath(): Path {
+            return ListPath(ImmutableList());
+        },
+        findCurrentWorkingDirectory(): AsyncResult<Directory, Error> {
+            const config = {
+                method: "get",
+                url: url + "/findCurrentWorkingDirectory"
+            };
+
+            return safeAxiosCasted(config, ListType(StringType))
+                .mapValue(ListPath)
+                .mapValue(AxiosDirectory);
+        }
     }
 }

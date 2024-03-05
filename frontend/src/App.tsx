@@ -1,30 +1,35 @@
 import './App.css';
 import {createMemo, createSignal, For, onMount, Show} from "solid-js";
-import {Directory, None, Option, Path, PathError, Some} from "@ide/common";
+import {Directory, Error, fromOption, None, Option, Path, Some, toImmutableList} from "@ide/common";
 import {Center, Column, Row} from "./Flex.tsx";
 import {Padding} from "./Padding.tsx";
 import {Box, Sheet} from "./Container.tsx";
 import {FontSize, Text} from "./Text.tsx";
 import {Icon, IconValue} from "./Icon.tsx";
 import {AxiosPaths} from "./path.ts";
+import {ImmutableList, List} from "@ide/common/src/js.ts";
 
 function App() {
     const [currentDirectory, setCurrentDirectory] = createSignal<Option<Directory>>(None());
-    const [files, setFiles] = createSignal<string[]>([]);
+    const [files, setFiles] = createSignal<List<string>>(ImmutableList());
     const [errorText, setText] = createSignal<string | undefined>(undefined);
 
-    function filterFiles(paths: Path[]) {
+    function filterFiles(paths: List<Path>) {
         return paths
+            .stream()
             .map(path => path.lastName())
-            .flatMap(option => option.map(value => [value]).orElse([]));
+            .flatMap(value => fromOption(value))
+            .collect(toImmutableList());
     }
 
-    function handleErr(err: PathError) {
+    function handleErr(err: Error) {
         return setText(err.message);
     }
 
     onMount(async () => {
-        await AxiosPaths.findCurrentWorkingDirectory().consume(handleErr, directory => setCurrentDirectory(Some(directory)));
+        await AxiosPaths("https://localhost:3000")
+            .findCurrentWorkingDirectory()
+            .consume(handleErr, directory => setCurrentDirectory(Some(directory)));
     });
 
     createMemo(() => {
@@ -81,7 +86,7 @@ function App() {
                                     width: "100%"
                                 }}/>
                                 <Column gap="0.5rem">
-                                    <For each={files()}>{(file) => (
+                                    <For each={files().unwrap()}>{(file) => (
                                         <button>
                                             <Text>
                                                 {file}
