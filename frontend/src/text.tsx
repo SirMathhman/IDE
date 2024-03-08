@@ -1,12 +1,13 @@
 import {component$, Slot} from "@builder.io/qwik";
 
 interface TextProps {
+    family?: string;
 }
 
-export const Text = component$<TextProps>(() => {
+export const Text = component$<TextProps>(({family}) => {
     return (
         <span style={{
-            "font-family": "Arial"
+            "font-family": family ?? "Arial"
         }}>
             <Slot/>
         </span>
