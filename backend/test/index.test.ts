@@ -12,8 +12,7 @@ const PORT = 3000;
 const EXPECTED = "test";
 describe('Within an integration context, a Koa server', () => {
     it('should be able to be connectable', async () => {
-        const app = new Koa();
-        app.use(context => {
+        const app = new Koa().use(context => {
             context.response.body = EXPECTED;
             context.response.status = 200;
         });
