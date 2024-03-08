@@ -1,9 +1,11 @@
-import Koa from "koa";
+import Koa, {ParameterizedContext} from "koa";
 import Application from "koa";
 import {Once} from "./once";
 import * as dotenv from "dotenv";
 import Router from "koa-router";
 import * as fs from "fs/promises";
+import cors from "@koa/cors";
+import bodyParser from "koa-bodyparser";
 
 dotenv.config();
 
@@ -39,11 +41,14 @@ function findPort() {
 async function main() {
     let actualPort = findPort();
     run(actualPort, app => {
+        app.use(cors());
+        app.use(bodyParser());
+
         const router = new Router();
-        router.get("/list", context => {
+        router.get("/list", async (context : ParameterizedContext) => {
             try {
                 context.response.status = 200;
-                context.response.body = fs.readdir(".");
+                context.response.body = await fs.readdir(".");
             } catch (e) {
                 context.response.status = 500;
                 context.response.body = "Failed to list local file.";

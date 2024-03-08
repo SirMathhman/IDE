@@ -1,10 +1,25 @@
-import {component$} from '@builder.io/qwik';
+import {component$, useSignal, useTask$} from '@builder.io/qwik';
 import {Text} from "./text.tsx";
 import {Constraint, Padding} from "./contain.tsx";
 import {Column, Row} from "./flex.tsx";
 import {HorizontalRule} from "./layout.tsx";
+import axios from "axios";
 
 export const App = component$(() => {
+    const signal = useSignal<string[]>([]);
+
+    useTask$(async () => {
+        try {
+            const response = await axios({
+                method: "get",
+                url: "http://localhost:3000/list"
+            });
+
+            signal.value = response.data;
+        } catch (e) {
+        }
+    });
+
     return (
         <Column>
             <Padding>
@@ -22,9 +37,17 @@ export const App = component$(() => {
                     </Padding>
                     <HorizontalRule/>
                     <Padding>
-                        <Text>
-                            One
-                        </Text>
+                        <Column>
+                            {
+                                signal.value.map((element, index) => {
+                                    return (
+                                        <Text key={index}>
+                                            {element}
+                                        </Text>
+                                    )
+                                })
+                            }
+                        </Column>
                     </Padding>
                 </Constraint>
                 <HorizontalRule/>
