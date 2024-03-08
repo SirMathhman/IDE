@@ -1,10 +1,11 @@
 import {component$, Slot} from "@builder.io/qwik";
 
 interface TextProps {
+    color?: string;
     family?: string;
 }
 
-export const Text = component$<TextProps>(({family}) => {
+export const Text = component$<TextProps>((props) => {
     return (
         <p style={{
             margin: 0,
@@ -12,7 +13,8 @@ export const Text = component$<TextProps>(({family}) => {
             "white-space": "pre"
         }}>
             <span style={{
-                "font-family": family ?? "Arial"
+                "color": props.color,
+                "font-family": props.family ?? "Arial"
             }}>
                 <Slot/>
             </span>

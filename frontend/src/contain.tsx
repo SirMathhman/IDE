@@ -6,7 +6,9 @@ interface PaddingProps {
 export const Padding = component$<PaddingProps>(() => {
     return (
         <div style={{
-            padding: "0.5rem"
+            padding: "0.5rem",
+            width: "calc(100% - 1rem)",
+            height: "calc(100% - 1rem)"
         }}>
             <Slot/>
         </div>
@@ -20,7 +22,7 @@ export interface ConstraintProps {
     width?: string;
 }
 
-export const Constraint = component$<ConstraintProps>(
+export const Box = component$<ConstraintProps>(
     (props) => {
     return (
         <div style={{
