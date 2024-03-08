@@ -1,6 +1,7 @@
 import * as assert from "assert";
 import axios from "axios";
-import Koa, {Context} from "koa";
+import {Context} from "koa";
+import {DefaultApplication, run} from "../src";
 
 describe('Jest', () => {
     it('should work fine', () => {
@@ -8,38 +9,26 @@ describe('Jest', () => {
     });
 });
 
-interface Once<T> {
-    value: T;
-
-    use(action: () => Promise<void>): Promise<void>;
-}
-
-function Once<T>(value: T, close: (value: T) => void): Once<T> {
-    return {
-        value,
-        async use(action: (value: T) => Promise<void>) {
-            await action(value);
-            close(value);
-        }
-    }
-}
-
-const PORT = 3000;
-const EXPECTED = "test";
 describe('Within an integration context, a Koa server', () => {
     it('should be able to be connectable', async () => {
-        const app = new Koa().use(function (context: Context) {
-            context.response.body = EXPECTED;
-            context.response.status = 200;
-        });
+        const TEST_PORT = 3000;
+        const TEST_VALUE = "test";
 
-        await Once(app.listen(PORT), server => server.close()).use(async () => {
+        function setup(koa: DefaultApplication): DefaultApplication {
+            koa.use(function (context: Context) {
+                context.response.body = TEST_VALUE;
+                context.response.status = 200;
+            });
+            return koa;
+        }
+
+        await run(TEST_PORT, setup).use(async () => {
             const response = await axios({
                 method: "get",
-                url: `http://localhost:${PORT}`
+                url: `http://localhost:${TEST_PORT}`
             });
 
-            expect(response.data).toBe(EXPECTED);
+            expect(response.data).toBe(TEST_VALUE);
         });
     });
 });
