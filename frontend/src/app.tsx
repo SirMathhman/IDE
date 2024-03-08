@@ -1,79 +1,8 @@
-import {component$, Slot} from '@builder.io/qwik';
-
-interface TextProps {
-}
-
-export const Text = component$<TextProps>(() => {
-    return (
-        <span style={{
-            "font-family": "Arial"
-        }}>
-            <Slot/>
-        </span>
-    )
-});
-
-interface PaddingProps {
-}
-
-export const Padding = component$<PaddingProps>(() => {
-    return (
-        <div style={{
-            padding: "0.5rem"
-        }}>
-            <Slot/>
-        </div>
-    )
-});
-
-export interface FlexProps {
-    direction: "row" | "column";
-}
-
-export const Flex = component$<FlexProps>(({direction}) => {
-    return (
-        <div style={{
-            display: "flex",
-            "flex-direction": direction,
-            width: "100%",
-            height: "100%"
-        }}>
-            <Slot/>
-        </div>
-    )
-});
-
-export const Row = component$<Omit<FlexProps, "direction">>(props => {
-    return <Flex {...props} direction="row"><Slot/></Flex>
-});
-
-export const Column = component$<Omit<FlexProps, "direction">>(props => {
-    return <Flex {...props} direction="column"><Slot/></Flex>
-});
-
-export const HorizontalRule = component$(() => {
-    return (<hr style={{
-        padding: 0,
-        margin: 0
-    }}/>)
-});
-
-export interface ConstraintProps {
-    expanded?: boolean;
-    height?: string;
-    width?: string;
-}
-
-export const Constraint = component$<ConstraintProps>(({width, height, expanded}) => {
-    return (
-        <div style={{
-            width: width ?? (expanded ? "100%" : undefined),
-            height: height ?? (expanded ? "100%" : undefined)
-        }}>
-            <Slot/>
-        </div>
-    );
-});
+import {component$} from '@builder.io/qwik';
+import {Text} from "./text.tsx";
+import {Constraint, Padding} from "./contain.tsx";
+import {Column, Row} from "./flex.tsx";
+import {HorizontalRule} from "./layout.tsx";
 
 export const App = component$(() => {
     return (
