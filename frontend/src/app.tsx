@@ -20,6 +20,12 @@ export const App = component$(() => {
                             Navigation
                         </Text>
                     </Padding>
+                    <HorizontalRule/>
+                    <Padding>
+                        <Text>
+                            One
+                        </Text>
+                    </Padding>
                 </Constraint>
                 <HorizontalRule/>
                 <Constraint width="80%" expanded>
