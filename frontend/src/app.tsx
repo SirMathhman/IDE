@@ -34,6 +34,7 @@ export const App = component$(() => {
                 });
 
                 content.value = (response.data as string).split("\n");
+                console.log(content.value);
             } catch (e) {
                 console.error(e);
             }
@@ -42,57 +43,61 @@ export const App = component$(() => {
 
     return (
         <Column>
-            <Padding>
-                <Text>
-                    File
-                </Text>
-            </Padding>
+            <Constraint expanded height="4%">
+                <Padding>
+                    <Text>
+                        File
+                    </Text>
+                </Padding>
+            </Constraint>
             <HorizontalRule/>
-            <Row>
-                <Constraint width="20%" expanded>
-                    <Padding>
-                        <Text>
-                            Navigation
-                        </Text>
-                    </Padding>
+            <Constraint expanded height="96%">
+                <Row>
+                    <Constraint width="20%" expanded>
+                        <Padding>
+                            <Text>
+                                Navigation
+                            </Text>
+                        </Padding>
+                        <HorizontalRule/>
+                        <Padding>
+                            <Column>
+                                {
+                                    files.value.map((element, index) => {
+                                        return (
+                                            <button onClick$={openFile(element)} key={index}>
+                                                <Text>
+                                                    {element}
+                                                </Text>
+                                            </button>
+                                        )
+                                    })
+                                }
+                            </Column>
+                        </Padding>
+                    </Constraint>
                     <HorizontalRule/>
-                    <Padding>
-                        <Column>
+                    <Constraint width="80%" expanded overflow-y>
+                        <Padding>
+                            <Text>
+                                Content
+                            </Text>
+                        </Padding>
+                        <HorizontalRule/>
+                        <Padding>
                             {
-                                files.value.map((element, index) => {
+                                content.value.map((line, index) => {
                                     return (
-                                        <button onClick$={openFile(element)} key={index}>
-                                            <Text>
-                                                {element}
-                                            </Text>
-                                        </button>
+                                        <Text family="Consolas" key={index}>
+                                            {line}
+                                        </Text>
                                     )
                                 })
                             }
-                        </Column>
-                    </Padding>
-                </Constraint>
-                <HorizontalRule/>
-                <Constraint width="80%" expanded>
-                    <Padding>
-                        <Text>
-                            Content
-                        </Text>
-                    </Padding>
-                    <HorizontalRule/>
-                    <Padding>
-                        {
-                            content.value.map((line, index) => {
-                                return (
-                                    <Text family="Consolas" key={index}>
-                                        {line}
-                                    </Text>
-                                )
-                            })
-                        }
-                    </Padding>
-                </Constraint>
-            </Row>
+                        </Padding>
+                    </Constraint>
+                </Row>
+            </Constraint>
         </Column>
     )
 })

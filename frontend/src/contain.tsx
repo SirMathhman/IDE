@@ -16,14 +16,17 @@ export const Padding = component$<PaddingProps>(() => {
 export interface ConstraintProps {
     expanded?: boolean;
     height?: string;
+    "overflow-y"?: boolean;
     width?: string;
 }
 
-export const Constraint = component$<ConstraintProps>(({width, height, expanded}) => {
+export const Constraint = component$<ConstraintProps>(
+    (props) => {
     return (
         <div style={{
-            width: width ?? (expanded ? "100%" : undefined),
-            height: height ?? (expanded ? "100%" : undefined)
+            width: props.width ?? (props.expanded ? "100%" : undefined),
+            height: props.height ?? (props.expanded ? "100%" : undefined),
+            "overflow-y": props["overflow-y"] ? "scroll" : undefined
         }}>
             <Slot/>
         </div>
