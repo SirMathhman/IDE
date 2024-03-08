@@ -41,6 +41,15 @@ export const App = component$(() => {
         })
     }
 
+    function formatIndex(index: number, total: number): string {
+        const totalDigits = Math.floor(Math.log10(total - 1) + 1);
+        const indexDigits = (index + 1) === 0 ? 1 : Math.floor(Math.log10(index + 1) + 1);
+        const delta = totalDigits - indexDigits;
+        return " ".repeat(delta) + (index + 1) + " ";
+    }
+
+
+
     return (
         <Column>
             <Constraint expanded height="4%">
@@ -88,9 +97,14 @@ export const App = component$(() => {
                             {
                                 content.value.map((line, index) => {
                                     return (
-                                        <Text family="Consolas" key={index}>
-                                            {line}
-                                        </Text>
+                                        <Row key={index}>
+                                            <Text  family="Consolas">
+                                                {formatIndex(index, content.value.length)}
+                                            </Text>
+                                            <Text family="Consolas">
+                                                {line}
+                                            </Text>
+                                        </Row>
                                     )
                                 })
                             }

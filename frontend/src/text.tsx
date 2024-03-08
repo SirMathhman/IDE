@@ -9,7 +9,7 @@ export const Text = component$<TextProps>(({family}) => {
         <p style={{
             margin: 0,
             padding: 0,
-            "white-space": "nowrap"
+            "white-space": "pre"
         }}>
             <span style={{
                 "font-family": family ?? "Arial"
