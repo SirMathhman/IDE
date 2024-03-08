@@ -8,6 +8,22 @@ describe('Jest', () => {
     });
 });
 
+interface Once<T> {
+    value: T;
+
+    use(action: () => Promise<void>): Promise<void>;
+}
+
+function Once<T>(value: T, close: (value: T) => void): Once<T> {
+    return {
+        value,
+        async use(action: (value: T) => Promise<void>) {
+            await action(value);
+            close(value);
+        }
+    }
+}
+
 const PORT = 3000;
 const EXPECTED = "test";
 describe('Within an integration context, a Koa server', () => {
@@ -17,15 +33,13 @@ describe('Within an integration context, a Koa server', () => {
             context.response.status = 200;
         });
 
-        const server = app.listen(PORT);
+        await Once(app.listen(PORT), server => server.close()).use(async () => {
+            const response = await axios({
+                method: "get",
+                url: `http://localhost:${PORT}`
+            });
 
-        const response = await axios({
-            method: "get",
-            url: `http://localhost:${PORT}`
+            expect(response.data).toBe(EXPECTED);
         });
-
-        expect(response.data).toBe(EXPECTED);
-
-        server.close();
     });
 });
