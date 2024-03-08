@@ -14,6 +14,9 @@ dependencies:
   koa:
     specifier: ^2.15.0
     version: 2.15.0
+  koa-router:
+    specifier: ^12.0.1
+    version: 12.0.1
 
 devDependencies:
   '@types/jest':
@@ -22,6 +25,9 @@ devDependencies:
   '@types/koa':
     specifier: ^2.15.0
     version: 2.15.0
+  '@types/koa-router':
+    specifier: ^7.4.8
+    version: 7.4.8
   '@types/node':
     specifier: ^20.11.25
     version: 20.11.25
@@ -1022,6 +1028,12 @@ packages:
       '@types/koa': 2.15.0
     dev: true
 
+  /@types/koa-router@7.4.8:
+    resolution: {integrity: sha512-SkWlv4F9f+l3WqYNQHnWjYnyTxYthqt8W9az2RTdQW7Ay8bc00iRZcrb8MC75iEfPqnGcg2csEl8tTG1NQPD4A==}
+    dependencies:
+      '@types/koa': 2.15.0
+    dev: true
+
   /@types/koa@2.15.0:
     resolution: {integrity: sha512-7QFsywoE5URbuVnG3loe03QXuGajrnotr3gQkXcEBShORai23MePfFYdhz90FEtBBpkyIYQbVD+evKtloCgX3g==}
     dependencies:
@@ -1825,6 +1837,17 @@ packages:
       toidentifier: 1.0.1
     dev: false
 
+  /http-errors@2.0.0:
+    resolution: {integrity: sha512-FtwrG/euBzaEjYeRqOgly7G0qviiXoJWnvEH2Z1plBdXgbyjv34pHTSb9zoeHMyDy33+DWy5Wt9Wo+TURtOYSQ==}
+    engines: {node: '>= 0.8'}
+    dependencies:
+      depd: 2.0.0
+      inherits: 2.0.4
+      setprototypeof: 1.2.0
+      statuses: 2.0.1
+      toidentifier: 1.0.1
+    dev: false
+
   /human-signals@2.1.0:
     resolution: {integrity: sha512-B4FFZ6q/T2jhhksgkbEW3HBvWIfDW85snkQgawt07S7J5QXTk6BkNV+0yAeZrM5QpMAdYlocGoljn0sJ/WQkFw==}
     engines: {node: '>=10.17.0'}
@@ -2440,6 +2463,19 @@ packages:
       koa-compose: 4.1.0
     dev: false
 
+  /koa-router@12.0.1:
+    resolution: {integrity: sha512-gaDdj3GtzoLoeosacd50kBBTnnh3B9AYxDThQUo4sfUyXdOhY6ku1qyZKW88tQCRgc3Sw6ChXYXWZwwgjOxE0w==}
+    engines: {node: '>= 12'}
+    dependencies:
+      debug: 4.3.4(supports-color@5.5.0)
+      http-errors: 2.0.0
+      koa-compose: 4.1.0
+      methods: 1.1.2
+      path-to-regexp: 6.2.1
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
   /koa@2.15.0:
     resolution: {integrity: sha512-KEL/vU1knsoUvfP4MC4/GthpQrY/p6dzwaaGI6Rt4NQuFqkw3qrvsdYF5pz3wOfi7IGTvMPHC9aZIcUKYFNxsw==}
     engines: {node: ^4.8.4 || ^6.10.1 || ^7.10.1 || >= 8.1.4}
@@ -2529,6 +2565,11 @@ packages:
   /merge-stream@2.0.0:
     resolution: {integrity: sha512-abv/qOcuPfk3URPfDzmZU1LKmuw8kT+0nIHvKrKgFrwifol/doWcdA4ZqsWQ8ENrFKkd67Mfpo/LovbIUsbt3w==}
     dev: true
+
+  /methods@1.1.2:
+    resolution: {integrity: sha512-iclAHeNqNm68zFtnZ0e+1L2yUIdvzNoauKU4WBA3VvH/vPFieF7qfRlwUZU+DA9P9bPXIS90ulxoUoCH23sV2w==}
+    engines: {node: '>= 0.6'}
+    dev: false
 
   /micromatch@4.0.5:
     resolution: {integrity: sha512-DMy+ERcEW2q8Z2Po+WNXuw3c5YaUSFjAO5GsJqfEl7UjvtIuFKO6ZrKvcItdy98dwFI2N1tg3zNIdKaQT+aNdA==}
@@ -2701,6 +2742,10 @@ packages:
     resolution: {integrity: sha512-LDJzPVEEEPR+y48z93A0Ed0yXb8pAByGWo/k5YYdYgpY2/2EsOsksJrq7lOHxryrVOn1ejG6oAp8ahvOIQD8sw==}
     dev: true
 
+  /path-to-regexp@6.2.1:
+    resolution: {integrity: sha512-JLyh7xT1kizaEvcaXOQwOc2/Yhw6KZOvPf1S8401UyLk86CU79LN3vl7ztXGm/pZ+YjoyAJ4rxmHwbkBXJX+yw==}
+    dev: false
+
   /picocolors@1.0.0:
     resolution: {integrity: sha512-1fygroTLlHu66zi26VoTDv8yRgm0Fccecssto+MhsZ0D/DGW2sm8E8AjW7NU5VVTRt5GxbeZ5qBuJr+HyLYkjQ==}
     dev: true
@@ -2872,6 +2917,11 @@ packages:
   /statuses@1.5.0:
     resolution: {integrity: sha512-OpZ3zP+jT1PI7I8nemJX4AKmAX070ZkYPVWV/AaKTJl+tXCTGyVdC1a4SL8RUQYEwk/f34ZX8UTykN68FwrqAA==}
     engines: {node: '>= 0.6'}
+    dev: false
+
+  /statuses@2.0.1:
+    resolution: {integrity: sha512-RwNA9Z/7PrK06rYLIzFMlaF+l73iwpzsqRIFgbMLbTcLD6cOao82TaWefPXQvB2fOC4AjuYSEndS7N/mTCbkdQ==}
+    engines: {node: '>= 0.8'}
     dev: false
 
   /string-length@4.0.2:

@@ -2,6 +2,8 @@ import Koa from "koa";
 import Application from "koa";
 import {Once} from "./once";
 import * as dotenv from "dotenv";
+import Router from "koa-router";
+import * as fs from "fs/promises";
 
 dotenv.config();
 
@@ -37,6 +39,18 @@ function findPort() {
 async function main() {
     let actualPort = findPort();
     run(actualPort, app => {
+        const router = new Router();
+        router.get("/list", context => {
+            try {
+                context.response.status = 200;
+                context.response.body = fs.readdir(".");
+            } catch (e) {
+                context.response.status = 500;
+                context.response.body = "Failed to list local file.";
+            }
+        });
+
+        app.use(router.routes());
         return app;
     });
 }
