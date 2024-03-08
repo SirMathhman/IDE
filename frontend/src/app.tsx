@@ -33,8 +33,13 @@ export const App = component$(() => {
                     }
                 });
 
-                content.value = (response.data as string).split("\n");
-                console.log(content.value);
+                const responseData = response.data;
+                const data = typeof responseData === "string"
+                    ? responseData
+                    : JSON.stringify(responseData, null, "  ");
+
+                console.log(data);
+                content.value = data.split("\n");
             } catch (e) {
                 console.error(e);
             }
@@ -42,12 +47,16 @@ export const App = component$(() => {
     }
 
     function formatIndex(index: number, total: number): string {
-        const totalDigits = Math.floor(Math.log10(total - 1) + 1);
+        const totalDigits = Math.floor(Math.log10(total) + 1);
         const indexDigits = (index + 1) === 0 ? 1 : Math.floor(Math.log10(index + 1) + 1);
         const delta = totalDigits - indexDigits;
-        return " ".repeat(delta) + (index + 1) + " ";
-    }
 
+        if (!Number.isInteger(delta)) {
+            throw new Error("Index: " + index + ", Total: " + total);
+        } else {
+            return " ".repeat(delta) + (index + 1) + " ";
+        }
+    }
 
 
     return (
@@ -98,7 +107,7 @@ export const App = component$(() => {
                                 content.value.map((line, index) => {
                                     return (
                                         <Row key={index}>
-                                            <Text  family="Consolas">
+                                            <Text family="Consolas">
                                                 {formatIndex(index, content.value.length)}
                                             </Text>
                                             <Text family="Consolas">

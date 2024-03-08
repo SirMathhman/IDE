@@ -59,6 +59,8 @@ async function main() {
             if (name) {
                 try {
                     context.response.status = 200;
+                    context.set("Content-Type", "text/plain"); // Set Content-Type to text/plain
+
                     context.response.body = await fs.readFile("./" + name);
                     return;
                 } catch (e) {
