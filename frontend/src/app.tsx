@@ -7,7 +7,7 @@ import axios from "axios";
 
 export const App = component$(() => {
     const files = useSignal<string[]>([]);
-    const content = useSignal<string>("");
+    const content = useSignal<string[]>([]);
 
     useTask$(async () => {
         try {
@@ -33,7 +33,7 @@ export const App = component$(() => {
                     }
                 });
 
-                content.value = response.data as string;
+                content.value = (response.data as string).split("\n");
             } catch (e) {
                 console.error(e);
             }
@@ -81,9 +81,15 @@ export const App = component$(() => {
                     </Padding>
                     <HorizontalRule/>
                     <Padding>
-                        <Text family="Consolas">
-                            {content.value}
-                        </Text>
+                        {
+                            content.value.map((line, index) => {
+                                return (
+                                    <Text family="Consolas" key={index}>
+                                        {line}
+                                    </Text>
+                                )
+                            })
+                        }
                     </Padding>
                 </Constraint>
             </Row>

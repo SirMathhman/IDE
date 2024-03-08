@@ -6,10 +6,15 @@ interface TextProps {
 
 export const Text = component$<TextProps>(({family}) => {
     return (
-        <span style={{
-            "font-family": family ?? "Arial"
+        <p style={{
+            margin: 0,
+            padding: 0
         }}>
-            <Slot/>
-        </span>
+            <span style={{
+                "font-family": family ?? "Arial"
+            }}>
+                <Slot/>
+            </span>
+        </p>
     )
 });
