@@ -1,5 +1,5 @@
-import Koa, {ParameterizedContext} from "koa";
-import Application from "koa";
+import Koa from "koa";
+import Application, {ParameterizedContext} from "koa";
 import {Once} from "./once";
 import * as dotenv from "dotenv";
 import Router from "koa-router";
@@ -45,7 +45,7 @@ async function main() {
         app.use(bodyParser());
 
         const router = new Router();
-        router.get("/list", async (context : ParameterizedContext) => {
+        router.get("/list", async (context: ParameterizedContext) => {
             try {
                 context.response.status = 200;
                 context.response.body = await fs.readdir(".");
@@ -54,6 +54,23 @@ async function main() {
                 context.response.body = "Failed to list local file.";
             }
         });
+        router.post("/file", async context => {
+            const {name} = context.request.body as Record<string, unknown | undefined>;
+            if (name) {
+                try {
+                    context.response.status = 200;
+                    context.response.body = await fs.readFile("./" + name);
+                    return;
+                } catch (e) {
+                    context.response.status = 500;
+                    context.response.body = (e as Error).message;
+                }
+            } else {
+                context.response.status = 400;
+                context.response.body = "No name provided.";
+                return;
+            }
+        })
 
         app.use(router.routes());
         return app;

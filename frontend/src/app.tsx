@@ -1,4 +1,4 @@
-import {component$, useSignal, useTask$} from '@builder.io/qwik';
+import {$, component$, useSignal, useTask$} from '@builder.io/qwik';
 import {Text} from "./text.tsx";
 import {Constraint, Padding} from "./contain.tsx";
 import {Column, Row} from "./flex.tsx";
@@ -6,7 +6,8 @@ import {HorizontalRule} from "./layout.tsx";
 import axios from "axios";
 
 export const App = component$(() => {
-    const signal = useSignal<string[]>([]);
+    const files = useSignal<string[]>([]);
+    const content = useSignal<string>("");
 
     useTask$(async () => {
         try {
@@ -15,10 +16,29 @@ export const App = component$(() => {
                 url: "http://localhost:3000/list"
             });
 
-            signal.value = response.data;
+            files.value = response.data;
         } catch (e) {
+            console.error(e);
         }
     });
+
+    function openFile(name: string) {
+        return $(async () => {
+            try {
+                const response = await axios({
+                    method: "post",
+                    url: "http://localhost:3000/file",
+                    data: {
+                        name
+                    }
+                });
+
+                content.value = response.data as string;
+            } catch (e) {
+                console.error(e);
+            }
+        })
+    }
 
     return (
         <Column>
@@ -39,11 +59,13 @@ export const App = component$(() => {
                     <Padding>
                         <Column>
                             {
-                                signal.value.map((element, index) => {
+                                files.value.map((element, index) => {
                                     return (
-                                        <Text key={index}>
-                                            {element}
-                                        </Text>
+                                        <button onClick$={openFile(element)}>
+                                            <Text key={index}>
+                                                {element}
+                                            </Text>
+                                        </button>
                                     )
                                 })
                             }
@@ -60,11 +82,7 @@ export const App = component$(() => {
                     <HorizontalRule/>
                     <Padding>
                         <Text family="Consolas">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-                            labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                            laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
-                            voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-                            cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                            {content.value}
                         </Text>
                     </Padding>
                 </Constraint>
