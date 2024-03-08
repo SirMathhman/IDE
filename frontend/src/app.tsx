@@ -61,8 +61,8 @@ export const App = component$(() => {
                             {
                                 files.value.map((element, index) => {
                                     return (
-                                        <button onClick$={openFile(element)}>
-                                            <Text key={index}>
+                                        <button onClick$={openFile(element)} key={index}>
+                                            <Text>
                                                 {element}
                                             </Text>
                                         </button>
