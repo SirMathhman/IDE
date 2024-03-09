@@ -1,8 +1,8 @@
 import {$, component$, useSignal, useTask$} from '@builder.io/qwik';
-import {Text} from "./text.tsx";
-import {Box, Padding} from "./contain.tsx";
-import {Column, Compact, Expand, Row} from "./flex.tsx";
-import {HorizontalRule, Sheet, Stack} from "./layout.tsx";
+import {Text} from "./component/text.tsx";
+import {Box, Padding} from "./component/contain.tsx";
+import {Column, Compact, Expand, Row} from "./component/flex.tsx";
+import {HorizontalRule, Sheet, Stack} from "./component/layout.tsx";
 import axios from "axios";
 
 export const App = component$(() => {
