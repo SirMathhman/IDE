@@ -1,39 +1,9 @@
-import {$, component$, Slot, useSignal, useTask$} from '@builder.io/qwik';
+import {$, component$, useSignal, useTask$} from '@builder.io/qwik';
 import {Text} from "./text.tsx";
 import {Box, Padding} from "./contain.tsx";
 import {Column, Compact, Expand, Row} from "./flex.tsx";
-import {HorizontalRule} from "./layout.tsx";
+import {HorizontalRule, Sheet, Stack} from "./layout.tsx";
 import axios from "axios";
-
-export const Stack = component$(() => {
-    return (
-        <div style={{
-            position: "absolute",
-            width: "100%",
-            height: "100%"
-        }}>
-            <Slot/>
-        </div>
-    )
-});
-
-export interface SheetProps {
-    color?: string;
-    rounded?: boolean;
-}
-
-export const Sheet = component$<SheetProps>(props => {
-    return (
-        <div style={{
-            width: "100%",
-            height: "100%",
-            "background-color": props.color,
-            "border-radius": props.rounded ? "1rem" : undefined
-        }}>
-            <Slot/>
-        </div>
-    )
-});
 
 export const App = component$(() => {
     const files = useSignal<string[]>([]);
