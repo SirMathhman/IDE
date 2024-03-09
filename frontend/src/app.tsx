@@ -50,6 +50,51 @@ export const Navigation = component$<Navigation>(props => {
     )
 });
 
+export interface ContentProps {
+    value : string[];
+}
+
+export const Content = component$<ContentProps>(props => {
+    function formatIndex(index: number, total: number): string {
+        const totalDigits = Math.floor(Math.log10(total) + 1);
+        const indexDigits = (index + 1) === 0 ? 1 : Math.floor(Math.log10(index + 1) + 1);
+        const delta = totalDigits - indexDigits;
+
+        if (Number.isInteger(delta)) {
+            return " ".repeat(delta) + (index + 1) + " ";
+        } else {
+            throw new Error("Index: " + index + ", Total: " + total);
+        }
+    }
+
+    return (
+        <Column>
+            <Header>
+                Content
+            </Header>
+            <HorizontalRule/>
+            <Padding>
+                {
+                    props.value.map((line, index) => {
+                        return (
+                            <Box key={index}>
+                                <Row>
+                                    <Text family="Consolas">
+                                        {formatIndex(index,  props.value.length)}
+                                    </Text>
+                                    <Text family="Consolas">
+                                        {line}
+                                    </Text>
+                                </Row>
+                            </Box>
+                        )
+                    })
+                }
+            </Padding>
+        </Column>
+    )
+});
+
 export const App = component$(() => {
     const files = useSignal<string[]>([]);
     const content = useSignal<string[]>([]);
@@ -89,18 +134,6 @@ export const App = component$(() => {
         }
     });
 
-    function formatIndex(index: number, total: number): string {
-        const totalDigits = Math.floor(Math.log10(total) + 1);
-        const indexDigits = (index + 1) === 0 ? 1 : Math.floor(Math.log10(index + 1) + 1);
-        const delta = totalDigits - indexDigits;
-
-        if (Number.isInteger(delta)) {
-            return " ".repeat(delta) + (index + 1) + " ";
-        } else {
-            throw new Error("Index: " + index + ", Total: " + total);
-        }
-    }
-
     return (
         <>
             <div>
@@ -119,28 +152,7 @@ export const App = component$(() => {
                                 </Box>
                                 <HorizontalRule/>
                                 <Box width="80%" expanded overflow-y>
-                                    <Header>
-                                        Content
-                                    </Header>
-                                    <HorizontalRule/>
-                                    <Padding>
-                                        {
-                                            content.value.map((line, index) => {
-                                                return (
-                                                    <Box>
-                                                        <Row key={index}>
-                                                            <Text family="Consolas">
-                                                                {formatIndex(index, content.value.length)}
-                                                            </Text>
-                                                            <Text family="Consolas">
-                                                                {line}
-                                                            </Text>
-                                                        </Row>
-                                                    </Box>
-                                                )
-                                            })
-                                        }
-                                    </Padding>
+                                    <Content value={content.value}/>
                                 </Box>
                             </Row>
                         </Box>
