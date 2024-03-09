@@ -1,99 +1,11 @@
-import {$, component$, QRL, Slot, useSignal, useTask$} from '@builder.io/qwik';
+import {$, component$, useSignal, useTask$} from '@builder.io/qwik';
 import {Text} from "./component/text.tsx";
 import {Box, Padding} from "./component/contain.tsx";
-import {Column, Compact, Expand, Row} from "./component/flex.tsx";
-import {HorizontalRule, Sheet, Stack} from "./component/layout.tsx";
+import {Column, Row} from "./component/flex.tsx";
+import {Header, HorizontalRule, Sheet, Stack} from "./component/layout.tsx";
 import axios from "axios";
-
-export const Header = component$(() => {
-    return (
-        <Box>
-            <Padding>
-                <Text>
-                    <Slot/>
-                </Text>
-            </Padding>
-        </Box>
-    )
-});
-
-export interface Navigation {
-    files: string[];
-    openFile: QRL<(name: string) => void>;
-}
-
-export const Navigation = component$<Navigation>(props => {
-    return (
-        <Column>
-            <Compact>
-                <Header>
-                    Navigation
-                </Header>
-            </Compact>
-            <HorizontalRule/>
-            <Expand>
-                <Padding>
-                    <Column>
-                        {
-                            props.files.map((element, index) => (
-                                <button onClick$={() => props.openFile(element)} key={index}>
-                                    <Text>
-                                        {element}
-                                    </Text>
-                                </button>
-                            ))
-                        }
-                    </Column>
-                </Padding>
-            </Expand>
-        </Column>
-    )
-});
-
-export interface ContentProps {
-    value : string[];
-}
-
-export const Content = component$<ContentProps>(props => {
-    function formatIndex(index: number, total: number): string {
-        const totalDigits = Math.floor(Math.log10(total) + 1);
-        const indexDigits = (index + 1) === 0 ? 1 : Math.floor(Math.log10(index + 1) + 1);
-        const delta = totalDigits - indexDigits;
-
-        if (Number.isInteger(delta)) {
-            return " ".repeat(delta) + (index + 1) + " ";
-        } else {
-            throw new Error("Index: " + index + ", Total: " + total);
-        }
-    }
-
-    return (
-        <Column>
-            <Header>
-                Content
-            </Header>
-            <HorizontalRule/>
-            <Padding>
-                {
-                    props.value.map((line, index) => {
-                        return (
-                            <Box key={index}>
-                                <Row>
-                                    <Text family="Consolas">
-                                        {formatIndex(index,  props.value.length)}
-                                    </Text>
-                                    <Text family="Consolas">
-                                        {line}
-                                    </Text>
-                                </Row>
-                            </Box>
-                        )
-                    })
-                }
-            </Padding>
-        </Column>
-    )
-});
+import {Navigation} from "./app/navigate.tsx";
+import {Content} from "./app/content.tsx";
 
 export const App = component$(() => {
     const files = useSignal<string[]>([]);

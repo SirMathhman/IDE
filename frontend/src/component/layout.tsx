@@ -1,4 +1,6 @@
 import {component$, Slot} from "@builder.io/qwik";
+import {Box, Padding} from "./contain.tsx";
+import {Text} from "./text.tsx";
 
 export const HorizontalRule = component$(() => {
     return (<hr style={{
@@ -39,5 +41,16 @@ export const Sheet = component$<SheetProps>(props => {
         }}>
             <Slot/>
         </div>
+    )
+});
+export const Header = component$(() => {
+    return (
+        <Box>
+            <Padding>
+                <Text>
+                    <Slot/>
+                </Text>
+            </Padding>
+        </Box>
     )
 });
