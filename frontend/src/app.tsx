@@ -1,7 +1,7 @@
 import {$, component$, QRL, useSignal, useTask$} from '@builder.io/qwik';
 import {Text} from "./component/text.tsx";
 import {Box, Padding} from "./component/contain.tsx";
-import {Column, Row} from "./component/flex.tsx";
+import {Column, Compact, Expand, Row} from "./component/flex.tsx";
 import {Header, HorizontalRule, Sheet, Stack} from "./component/layout.tsx";
 import axios from "axios";
 import {Navigation} from "./app/navigate.tsx";
@@ -51,13 +51,20 @@ export const Main = component$<MainProps>(props => {
 
     return (
         <Column>
-            <Box expanded height="4%">
-                <Header>
-                    File
-                </Header>
-            </Box>
+            <Compact>
+                <Box expanded>
+                    <div>
+                        <Header>
+                            File
+                        </Header>
+                        <Header>
+                            Open Directory
+                        </Header>
+                    </div>
+                </Box>
+            </Compact>
             <HorizontalRule/>
-            <Box expanded height="96%">
+            <Expand>
                 <Row>
                     <Box width="20%" expanded>
                         <Navigation files={files.value} openFile={openFile}/>
@@ -67,7 +74,7 @@ export const Main = component$<MainProps>(props => {
                         <Content value={content.value}/>
                     </Box>
                 </Row>
-            </Box>
+            </Expand>
         </Column>
     )
 });
