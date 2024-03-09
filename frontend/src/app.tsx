@@ -1,9 +1,19 @@
-import {$, component$, useSignal, useTask$} from '@builder.io/qwik';
+import {$, component$, Slot, useSignal, useTask$} from '@builder.io/qwik';
 import {Text} from "./component/text.tsx";
 import {Box, Padding} from "./component/contain.tsx";
 import {Column, Compact, Expand, Row} from "./component/flex.tsx";
 import {HorizontalRule, Sheet, Stack} from "./component/layout.tsx";
 import axios from "axios";
+
+export const Header = component$(() => {
+    return (
+        <Padding>
+            <Text>
+                <Slot/>
+            </Text>
+        </Padding>
+    )
+});
 
 export const App = component$(() => {
     const files = useSignal<string[]>([]);
@@ -64,11 +74,9 @@ export const App = component$(() => {
                 <Stack>
                     <Column>
                         <Box expanded height="4%">
-                            <Padding>
-                                <Text>
-                                    File
-                                </Text>
-                            </Padding>
+                            <Header>
+                                File
+                            </Header>
                         </Box>
                         <HorizontalRule/>
                         <Box expanded height="96%">
@@ -76,26 +84,22 @@ export const App = component$(() => {
                                 <Box width="20%" expanded>
                                     <Column>
                                         <Compact>
-                                            <Padding>
-                                                <Text>
-                                                    Navigation
-                                                </Text>
-                                            </Padding>
+                                            <Header>
+                                                Navigation
+                                            </Header>
                                         </Compact>
                                         <HorizontalRule/>
                                         <Expand>
                                             <Padding>
                                                 <Column>
                                                     {
-                                                        files.value.map((element, index) => {
-                                                            return (
-                                                                <button onClick$={openFile(element)} key={index}>
-                                                                    <Text>
-                                                                        {element}
-                                                                    </Text>
-                                                                </button>
-                                                            )
-                                                        })
+                                                        files.value.map((element, index) => (
+                                                            <button onClick$={openFile(element)} key={index}>
+                                                                <Text>
+                                                                    {element}
+                                                                </Text>
+                                                            </button>
+                                                        ))
                                                     }
                                                 </Column>
                                             </Padding>
@@ -104,11 +108,9 @@ export const App = component$(() => {
                                 </Box>
                                 <HorizontalRule/>
                                 <Box width="80%" expanded overflow-y>
-                                    <Padding>
-                                        <Text>
-                                            Content
-                                        </Text>
-                                    </Padding>
+                                    <Header>
+                                        Content
+                                    </Header>
                                     <HorizontalRule/>
                                     <Padding>
                                         {
