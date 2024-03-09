@@ -6,12 +6,18 @@ export const HorizontalRule = component$(() => {
         margin: 0
     }}/>)
 });
-export const Stack = component$(() => {
+
+export interface StackProps {
+    interactable?: boolean;
+}
+
+export const Stack = component$<StackProps>(props => {
     return (
         <div style={{
             position: "absolute",
             width: "100%",
-            height: "100%"
+            height: "100%",
+            "pointer-events": props.interactable ? undefined : "none"
         }}>
             <Slot/>
         </div>

@@ -1,4 +1,4 @@
-import {$, component$, Slot, useSignal, useTask$} from '@builder.io/qwik';
+import {$, component$, QRL, Slot, useSignal, useTask$} from '@builder.io/qwik';
 import {Text} from "./component/text.tsx";
 import {Box, Padding} from "./component/contain.tsx";
 import {Column, Compact, Expand, Row} from "./component/flex.tsx";
@@ -7,11 +7,46 @@ import axios from "axios";
 
 export const Header = component$(() => {
     return (
-        <Padding>
-            <Text>
-                <Slot/>
-            </Text>
-        </Padding>
+        <Box>
+            <Padding>
+                <Text>
+                    <Slot/>
+                </Text>
+            </Padding>
+        </Box>
+    )
+});
+
+export interface Navigation {
+    files: string[];
+    openFile: QRL<(name: string) => void>;
+}
+
+export const Navigation = component$<Navigation>(props => {
+    return (
+        <Column>
+            <Compact>
+                <Header>
+                    Navigation
+                </Header>
+            </Compact>
+            <HorizontalRule/>
+            <Expand>
+                <Padding>
+                    <Column>
+                        {
+                            props.files.map((element, index) => (
+                                <button onClick$={() => props.openFile(element)} key={index}>
+                                    <Text>
+                                        {element}
+                                    </Text>
+                                </button>
+                            ))
+                        }
+                    </Column>
+                </Padding>
+            </Expand>
+        </Column>
     )
 });
 
@@ -32,29 +67,27 @@ export const App = component$(() => {
         }
     });
 
-    function openFile(name: string) {
-        return $(async () => {
-            try {
-                const response = await axios({
-                    method: "post",
-                    url: "http://localhost:3000/file",
-                    data: {
-                        name
-                    }
-                });
+    const openFile = $(async (name: string) => {
+        try {
+            const response = await axios({
+                method: "post",
+                url: "http://localhost:3000/file",
+                data: {
+                    name
+                }
+            });
 
-                const responseData = response.data;
-                const data = typeof responseData === "string"
-                    ? responseData
-                    : JSON.stringify(responseData, null, "  ");
+            const responseData = response.data;
+            const data = typeof responseData === "string"
+                ? responseData
+                : JSON.stringify(responseData, null, "  ");
 
-                console.log(data);
-                content.value = data.split("\n");
-            } catch (e) {
-                console.error(e);
-            }
-        })
-    }
+            console.log(data);
+            content.value = data.split("\n");
+        } catch (e) {
+            console.error(e);
+        }
+    });
 
     function formatIndex(index: number, total: number): string {
         const totalDigits = Math.floor(Math.log10(total) + 1);
@@ -71,7 +104,7 @@ export const App = component$(() => {
     return (
         <>
             <div>
-                <Stack>
+                <Stack interactable>
                     <Column>
                         <Box expanded height="4%">
                             <Header>
@@ -82,29 +115,7 @@ export const App = component$(() => {
                         <Box expanded height="96%">
                             <Row>
                                 <Box width="20%" expanded>
-                                    <Column>
-                                        <Compact>
-                                            <Header>
-                                                Navigation
-                                            </Header>
-                                        </Compact>
-                                        <HorizontalRule/>
-                                        <Expand>
-                                            <Padding>
-                                                <Column>
-                                                    {
-                                                        files.value.map((element, index) => (
-                                                            <button onClick$={openFile(element)} key={index}>
-                                                                <Text>
-                                                                    {element}
-                                                                </Text>
-                                                            </button>
-                                                        ))
-                                                    }
-                                                </Column>
-                                            </Padding>
-                                        </Expand>
-                                    </Column>
+                                    <Navigation files={files.value} openFile={openFile}/>
                                 </Box>
                                 <HorizontalRule/>
                                 <Box width="80%" expanded overflow-y>
@@ -116,14 +127,16 @@ export const App = component$(() => {
                                         {
                                             content.value.map((line, index) => {
                                                 return (
-                                                    <Row key={index}>
-                                                        <Text family="Consolas">
-                                                            {formatIndex(index, content.value.length)}
-                                                        </Text>
-                                                        <Text family="Consolas">
-                                                            {line}
-                                                        </Text>
-                                                    </Row>
+                                                    <Box>
+                                                        <Row key={index}>
+                                                            <Text family="Consolas">
+                                                                {formatIndex(index, content.value.length)}
+                                                            </Text>
+                                                            <Text family="Consolas">
+                                                                {line}
+                                                            </Text>
+                                                        </Row>
+                                                    </Box>
                                                 )
                                             })
                                         }
