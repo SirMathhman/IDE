@@ -1,4 +1,4 @@
-import {$, component$, useSignal, useTask$} from '@builder.io/qwik';
+import {$, component$, QRL, useSignal, useTask$} from '@builder.io/qwik';
 import {Text} from "./component/text.tsx";
 import {Box, Padding} from "./component/contain.tsx";
 import {Column, Row} from "./component/flex.tsx";
@@ -7,7 +7,11 @@ import axios from "axios";
 import {Navigation} from "./app/navigate.tsx";
 import {Content} from "./app/content.tsx";
 
-export const App = component$(() => {
+export interface MainProps {
+    onError: QRL<(error: unknown) => void>;
+}
+
+export const Main = component$<MainProps>(props => {
     const files = useSignal<string[]>([]);
     const content = useSignal<string[]>([]);
 
@@ -20,7 +24,7 @@ export const App = component$(() => {
 
             files.value = response.data;
         } catch (e) {
-            console.error(e);
+            await props.onError(e);
         }
     });
 
@@ -39,7 +43,6 @@ export const App = component$(() => {
                 ? responseData
                 : JSON.stringify(responseData, null, "  ");
 
-            console.log(data);
             content.value = data.split("\n");
         } catch (e) {
             console.error(e);
@@ -47,46 +50,75 @@ export const App = component$(() => {
     });
 
     return (
+        <Column>
+            <Box expanded height="4%">
+                <Header>
+                    File
+                </Header>
+            </Box>
+            <HorizontalRule/>
+            <Box expanded height="96%">
+                <Row>
+                    <Box width="20%" expanded>
+                        <Navigation files={files.value} openFile={openFile}/>
+                    </Box>
+                    <HorizontalRule/>
+                    <Box width="80%" expanded overflow-y>
+                        <Content value={content.value}/>
+                    </Box>
+                </Row>
+            </Box>
+        </Column>
+    )
+});
+
+const ErrorDisplay = component$<{ value: string }>(props => {
+    return (
+        <Stack>
+            <Column justify="end" align="center">
+                <Box>
+                    <Padding>
+                        <Sheet rounded color="crimson">
+                            <Box width="50vw">
+                                <Padding>
+                                    <Row justify="center">
+                                        <Text color="white">
+                                            {props.value}
+                                        </Text>
+                                    </Row>
+                                </Padding>
+                            </Box>
+                        </Sheet>
+                    </Padding>
+                </Box>
+            </Column>
+        </Stack>
+    )
+});
+
+export const App = component$(() => {
+    const errorText = useSignal<string | undefined>(undefined);
+
+    const setError = $((value: unknown) => {
+        let message: string;
+        if (value instanceof Error) {
+            message = value.message;
+        } else if (typeof value === "string") {
+            message = value;
+        } else {
+            message = JSON.stringify(value);
+        }
+
+        errorText.value = message;
+    });
+
+    return (
         <>
             <div>
                 <Stack interactable>
-                    <Column>
-                        <Box expanded height="4%">
-                            <Header>
-                                File
-                            </Header>
-                        </Box>
-                        <HorizontalRule/>
-                        <Box expanded height="96%">
-                            <Row>
-                                <Box width="20%" expanded>
-                                    <Navigation files={files.value} openFile={openFile}/>
-                                </Box>
-                                <HorizontalRule/>
-                                <Box width="80%" expanded overflow-y>
-                                    <Content value={content.value}/>
-                                </Box>
-                            </Row>
-                        </Box>
-                    </Column>
+                    <Main onError={setError}/>
                 </Stack>
-                <Stack>
-                    <Column justify="end" align="center">
-                        <Box>
-                            <Padding>
-                                <Sheet rounded color="crimson">
-                                    <Box width="50vw">
-                                        <Padding>
-                                            <Text color="white">
-                                                This a test error message.
-                                            </Text>
-                                        </Padding>
-                                    </Box>
-                                </Sheet>
-                            </Padding>
-                        </Box>
-                    </Column>
-                </Stack>
+                {errorText.value && <ErrorDisplay value={errorText.value}/>}
             </div>
         </>
     )
