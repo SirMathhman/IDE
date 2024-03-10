@@ -10,16 +10,22 @@ export const HorizontalRule = component$(() => {
 });
 
 export interface StackProps {
-    interactable?: boolean;
+    interactive?: boolean;
+    position?: "absolute" | "relative";
+    left?: number;
+    top?: number;
+    compact?: boolean;
 }
 
 export const Stack = component$<StackProps>(props => {
     return (
         <div style={{
-            position: "absolute",
-            width: "100%",
-            height: "100%",
-            "pointer-events": props.interactable ? undefined : "none"
+            position: props.position,
+            width: props.compact ? undefined : "100%",
+            height: props.compact? undefined : "100%",
+            "pointer-events": props.interactive ? undefined : "none",
+            top: props.top ? props.top + "px" : undefined,
+            left: props.left ? props.left + "px" : undefined
         }}>
             <Slot/>
         </div>
@@ -36,7 +42,7 @@ export const Sheet = component$<SheetProps>(props => {
         <div style={{
             width: "100%",
             height: "100%",
-            "background-color": props.color,
+            "background-color": props.color ?? "white",
             "border-radius": props.rounded ? "1rem" : undefined
         }}>
             <Slot/>

@@ -1,4 +1,4 @@
-import {$, component$, QRL, useSignal, useTask$} from '@builder.io/qwik';
+import {$, component$, QRL, useSignal, useTask$, useVisibleTask$} from '@builder.io/qwik';
 import {Text} from "./component/text.tsx";
 import {Box, Padding} from "./component/contain.tsx";
 import {Column, Compact, Expand, Row} from "./component/flex.tsx";
@@ -49,18 +49,27 @@ export const Main = component$<MainProps>(props => {
         }
     });
 
+    const fileMenu = useSignal<HTMLDivElement | undefined>(undefined);
+
+    type Position = { top: number, left: number };
+    const menuPosition = useSignal<Position>({top: 0, left: 0});
+    useVisibleTask$(({track}) => {
+        track(() => fileMenu.value);
+        menuPosition.value = {
+            top: fileMenu.value?.getBoundingClientRect().height ?? 0,
+            left: 0
+        };
+    });
+
     return (
         <Column>
             <Compact>
                 <Box expanded>
-                    <div>
+                    <Box ref={fileMenu}>
                         <Header>
                             File
                         </Header>
-                        <Header>
-                            Open Directory
-                        </Header>
-                    </div>
+                    </Box>
                 </Box>
             </Compact>
             <HorizontalRule/>
@@ -122,7 +131,7 @@ export const App = component$(() => {
     return (
         <>
             <div>
-                <Stack interactable>
+                <Stack interactive>
                     <Main onError={setError}/>
                 </Stack>
                 {errorText.value && <ErrorDisplay value={errorText.value}/>}

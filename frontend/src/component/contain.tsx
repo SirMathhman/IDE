@@ -1,4 +1,4 @@
-import {component$, Slot} from "@builder.io/qwik";
+import {component$, Signal, Slot} from "@builder.io/qwik";
 
 interface PaddingProps {
 }
@@ -15,22 +15,23 @@ export const Padding = component$<PaddingProps>(() => {
     )
 });
 
-export interface ConstraintProps {
+export interface BoxProps {
     expanded?: boolean;
     height?: string;
     "overflow-y"?: boolean;
+    ref?: Signal<HTMLDivElement | undefined>;
     width?: string;
 }
 
-export const Box = component$<ConstraintProps>(
+export const Box = component$<BoxProps>(
     (props) => {
-    return (
-        <div style={{
-            width: props.width ?? (props.expanded ? "100%" : undefined),
-            height: props.height ?? (props.expanded ? "100%" : undefined),
-            "overflow-y": props["overflow-y"] ? "scroll" : undefined
-        }}>
-            <Slot/>
-        </div>
-    );
-});
+        return (
+            <div style={{
+                width: props.width ?? (props.expanded ? "100%" : undefined),
+                height: props.height ?? (props.expanded ? "100%" : undefined),
+                "overflow-y": props["overflow-y"] ? "scroll" : undefined,
+            }} ref={props.ref}>
+                <Slot/>
+            </div>
+        );
+    });
