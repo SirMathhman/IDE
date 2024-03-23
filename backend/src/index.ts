@@ -35,7 +35,7 @@ function createRoutes() {
         prefix: "/"
     });
 
-    router.get("/findCurrentWorkingDirectory", async context => {
+    router.get("/test", async context => {
         await $Route(findCurrentWorkingDirectory)(new ContextWrapper(context));
     });
 
